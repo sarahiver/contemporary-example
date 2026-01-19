@@ -8,11 +8,11 @@ const float = keyframes`
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  background: var(--gray-100);
 `;
 
 const Container = styled.div`
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
 `;
 
@@ -21,27 +21,36 @@ const Header = styled.div`
   margin-bottom: 4rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #fff;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transition: all 0.6s ease;
+`;
+
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 1rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
 `;
 
 const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1.1rem;
-  color: rgba(255,255,255,0.7);
-  max-width: 500px;
-  margin: 0 auto;
+  font-size: 1rem;
+  color: var(--gray-600);
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transition: all 0.6s ease 0.2s;
 `;
 
 const Grid = styled.div`
@@ -50,24 +59,24 @@ const Grid = styled.div`
   gap: 2rem;
   margin-bottom: 3rem;
   
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Card = styled.div`
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 24px;
+  background: var(--white);
   padding: 2.5rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: ${p => 0.2 + p.$index * 0.15}s;
+  transition: all 0.6s ease ${p => 0.3 + p.$index * 0.15}s;
   
   &:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(139, 92, 246, 0.3);
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
   }
 `;
 
@@ -75,14 +84,17 @@ const CardIcon = styled.div`
   font-size: 4rem;
   margin-bottom: 1.5rem;
   animation: ${float} 3s ease-in-out infinite;
-  animation-delay: ${p => p.$delay || '0s'};
+`;
+
+const CardIconDelayed = styled(CardIcon)`
+  animation-delay: 0.5s;
 `;
 
 const CardTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 1.5rem;
 `;
 
@@ -91,13 +103,12 @@ const CardList = styled.ul`
 `;
 
 const CardItem = styled.li`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.95rem;
-  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  color: var(--gray-600);
   padding: 0.75rem 0;
   padding-left: 2rem;
   position: relative;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 2px solid var(--gray-200);
   
   &:last-child { border: none; }
   
@@ -105,19 +116,18 @@ const CardItem = styled.li`
     content: '✓';
     position: absolute;
     left: 0;
-    color: #10b981;
+    color: var(--electric);
+    font-weight: 700;
   }
 `;
 
 const ColorPalette = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.5s;
+  transition: all 0.6s ease 0.5s;
 `;
 
 const ColorItem = styled.div`
@@ -131,50 +141,45 @@ const ColorSwatch = styled.div`
   width: 50px;
   height: 50px;
   background: ${p => p.$color};
-  border-radius: 12px;
-  border: ${p => p.$border ? '2px solid rgba(255,255,255,0.2)' : 'none'};
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
 `;
 
 const ColorName = styled.span`
-  font-family: 'Sora', sans-serif;
   font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
+  color: var(--gray-600);
 `;
 
-const Note = styled.div`
+const TipBox = styled.div`
   margin-top: 3rem;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-radius: 16px;
+  background: var(--yellow);
   padding: 1.5rem 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
   text-align: center;
   opacity: ${p => p.$visible ? 1 : 0};
-  transition: all 0.8s ease;
-  transition-delay: 0.6s;
+  transition: all 0.6s ease 0.6s;
 `;
 
-const NoteText = styled.p`
-  font-family: 'Sora', sans-serif;
+const TipText = styled.p`
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.8);
+  color: var(--black);
   margin: 0;
   
-  strong { color: #fff; }
+  strong { font-weight: 700; }
 `;
 
-function Dresscode({ title = 'Dresscode 👔👗', subtitle = 'Elegante Abendgarderobe in festlichem Rahmen.' }) {
+function Dresscode() {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
 
   const colors = [
-    { color: '#1a1a2e', name: 'Schwarz' },
+    { color: 'var(--black)', name: 'Schwarz' },
     { color: '#4b5563', name: 'Anthrazit' },
-    { color: '#6b7280', name: 'Grau' },
-    { color: '#ffffff', name: 'Weiß', border: true },
+    { color: 'var(--white)', name: 'Weiß' },
     { color: '#d4af37', name: 'Gold' },
   ];
 
@@ -191,30 +196,31 @@ function Dresscode({ title = 'Dresscode 👔👗', subtitle = 'Elegante Abendgar
     <Section ref={sectionRef} id="dresscode">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Eyebrow $visible={visible}>👔👗 Dresscode</Eyebrow>
+          <Title $visible={visible}>What to Wear</Title>
+          <Subtitle $visible={visible}>Elegante Abendgarderobe in festlichem Rahmen</Subtitle>
         </Header>
         
         <Grid>
           <Card $index={0} $visible={visible}>
-            <CardIcon $delay="0s">🤵</CardIcon>
+            <CardIcon>🤵</CardIcon>
             <CardTitle>Für die Herren</CardTitle>
             <CardList>
               <CardItem>Dunkler Anzug</CardItem>
-              <CardItem>Hemd mit Krawatte oder Fliege</CardItem>
+              <CardItem>Hemd mit Krawatte/Fliege</CardItem>
               <CardItem>Elegante Lederschuhe</CardItem>
               <CardItem>Optional: Einstecktuch</CardItem>
             </CardList>
           </Card>
           
           <Card $index={1} $visible={visible}>
-            <CardIcon $delay="0.5s">👰</CardIcon>
+            <CardIconDelayed>👰</CardIconDelayed>
             <CardTitle>Für die Damen</CardTitle>
             <CardList>
               <CardItem>Cocktail- oder Abendkleid</CardItem>
               <CardItem>Eleganter Jumpsuit</CardItem>
               <CardItem>Absatzschuhe oder elegante Flats</CardItem>
-              <CardItem>Bitte kein Weiß oder Creme</CardItem>
+              <CardItem>Bitte kein Weiß/Creme</CardItem>
             </CardList>
           </Card>
         </Grid>
@@ -222,17 +228,17 @@ function Dresscode({ title = 'Dresscode 👔👗', subtitle = 'Elegante Abendgar
         <ColorPalette $visible={visible}>
           {colors.map((c, i) => (
             <ColorItem key={i}>
-              <ColorSwatch $color={c.color} $border={c.border} />
+              <ColorSwatch $color={c.color} />
               <ColorName>{c.name}</ColorName>
             </ColorItem>
           ))}
         </ColorPalette>
         
-        <Note $visible={visible}>
-          <NoteText>
-            <strong>💡 Tipp:</strong> Die Feier findet teils im Freien statt – denkt an einen leichten Überwurf für den Abend!
-          </NoteText>
-        </Note>
+        <TipBox $visible={visible}>
+          <TipText>
+            <strong>💡 Tipp:</strong> Die Feier findet teils im Freien statt – denkt an einen Überwurf für den Abend!
+          </TipText>
+        </TipBox>
       </Container>
     </Section>
   );

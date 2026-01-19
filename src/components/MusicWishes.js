@@ -2,34 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const bounce = keyframes`
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-  }
+  background: linear-gradient(135deg, var(--purple), var(--pink));
 `;
 
 const Container = styled.div`
   max-width: 700px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 `;
 
 const Header = styled.div`
@@ -37,216 +21,194 @@ const Header = styled.div`
   margin-bottom: 3rem;
 `;
 
-const MusicIcon = styled.div`
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: ${bounce} 2s ease-in-out infinite;
-`;
-
 const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.5rem;
+  color: var(--white);
+  text-transform: uppercase;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease;
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: rgba(255,255,255,0.7);
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+const FloatingNote1 = styled.span`
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.3;
+  animation: ${bounce} 3s ease-in-out infinite;
+  top: 10%;
+  left: 10%;
+`;
+
+const FloatingNote2 = styled.span`
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.3;
+  animation: ${bounce} 3s ease-in-out infinite;
+  animation-delay: 0.5s;
+  top: 20%;
+  right: 15%;
+`;
+
+const FloatingNote3 = styled.span`
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.3;
+  animation: ${bounce} 3s ease-in-out infinite;
+  animation-delay: 1s;
+  bottom: 30%;
+  left: 5%;
 `;
 
 const Form = styled.form`
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 24px;
+  background: var(--white);
   padding: 2.5rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-xl);
+  margin-bottom: 2rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.2s;
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
+  transition: all 0.6s ease 0.2s;
+`;
+
+const FormRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 `;
 
 const Label = styled.label`
   display: block;
-  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
+  color: var(--gray-600);
   margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: 'Sora', sans-serif;
+  padding: 1rem;
   font-size: 1rem;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  
-  &::placeholder { color: rgba(255,255,255,0.4); }
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
+  transition: all 0.2s ease;
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const TextArea = styled.textarea`
+const Textarea = styled.textarea`
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: 'Sora', sans-serif;
+  padding: 1rem;
   font-size: 1rem;
-  color: #fff;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  min-height: 100px;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
+  min-height: 80px;
   resize: vertical;
-  transition: all 0.3s ease;
-  
-  &::placeholder { color: rgba(255,255,255,0.4); }
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
 const SubmitButton = styled.button`
   width: 100%;
   padding: 1.25rem;
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border: none;
-  border-radius: 12px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--purple);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
   }
 `;
 
-const SongList = styled.div`
-  margin-top: 3rem;
-`;
-
-const SongListTitle = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
-const SongItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  margin-bottom: 0.75rem;
+const WishCard = styled.div`
+  background: rgba(255,255,255,0.15);
+  padding: 1.5rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  margin-bottom: 1rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateX(${p => p.$visible ? 0 : '-20px'});
-  transition: all 0.5s ease;
-  transition-delay: ${p => 0.4 + p.$index * 0.1}s;
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.5s ease ${p => 0.4 + p.$index * 0.1}s;
 `;
 
-const SongNumber = styled.div`
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.85rem;
+const WishSong = styled.div`
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
 `;
 
-const SongInfo = styled.div`
-  flex: 1;
+const WishArtist = styled.div`
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 0.5rem;
 `;
 
-const SongTitle = styled.div`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #fff;
-`;
-
-const SongArtist = styled.div`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.5);
-`;
-
-const SongBy = styled.div`
-  font-family: 'Sora', sans-serif;
+const WishBy = styled.div`
   font-size: 0.75rem;
-  color: #EC4899;
+  color: rgba(255,255,255,0.6);
 `;
 
 const Success = styled.div`
+  background: var(--white);
+  padding: 3rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-xl);
   text-align: center;
-  padding: 2rem;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 16px;
-  margin-top: 1rem;
 `;
 
-const SuccessText = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #10b981;
+const SuccessEmoji = styled.div`
+  font-size: 4rem;
+  margin-bottom: 1rem;
 `;
 
-function MusicWishes({ title = 'Musikwünsche 🎵', subtitle = 'Welcher Song bringt euch garantiert auf die Tanzfläche?', songs = [], onSubmit }) {
+const SuccessTitle = styled.h3`
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+`;
+
+function MusicWishes({ wishes = [], onSubmit }) {
   const [visible, setVisible] = useState(false);
-  const [formData, setFormData] = useState({ name: '', song: '', artist: '', comment: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', song: '', artist: '', message: '' });
   const sectionRef = useRef(null);
 
-  const defaultSongs = [
-    { title: "Don't Stop Me Now", artist: 'Queen', by: 'Anna' },
-    { title: 'September', artist: 'Earth, Wind & Fire', by: 'Thomas' },
-    { title: 'Uptown Funk', artist: 'Bruno Mars', by: 'Lisa' },
+  const defaultWishes = [
+    { song: "I Gotta Feeling", artist: "Black Eyed Peas", by: "Müller" },
+    { song: "Uptown Funk", artist: "Bruno Mars", by: "Schmidt" },
   ];
 
-  const items = songs.length > 0 ? songs : defaultSongs;
+  const displayWishes = wishes.length > 0 ? wishes : defaultWishes;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -260,86 +222,60 @@ function MusicWishes({ title = 'Musikwünsche 🎵', subtitle = 'Welcher Song br
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (onSubmit) await onSubmit(formData);
-    setFormData({ name: '', song: '', artist: '', comment: '' });
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setTimeout(() => {
+      setSubmitted(false);
+      setFormData({ name: '', song: '', artist: '', message: '' });
+    }, 3000);
   };
 
   return (
-    <Section ref={sectionRef} id="music">
+    <Section ref={sectionRef} id="music" style={{ position: 'relative' }}>
+      <FloatingNote1>🎵</FloatingNote1>
+      <FloatingNote2>🎶</FloatingNote2>
+      <FloatingNote3>🎵</FloatingNote3>
+      
       <Container>
         <Header>
-          <MusicIcon>🎶</MusicIcon>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Title $visible={visible}>🎵 Musikwünsche</Title>
         </Header>
         
-        <Form $visible={visible} onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label>Dein Name</Label>
-            <Input 
-              type="text"
-              value={formData.name}
-              onChange={e => setFormData({...formData, name: e.target.value})}
-              placeholder="Wie heißt du?"
-              required
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Songtitel *</Label>
-            <Input 
-              type="text"
-              value={formData.song}
-              onChange={e => setFormData({...formData, song: e.target.value})}
-              placeholder="Dein Lieblingssong"
-              required
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Künstler</Label>
-            <Input 
-              type="text"
-              value={formData.artist}
-              onChange={e => setFormData({...formData, artist: e.target.value})}
-              placeholder="Band oder Interpret"
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Kommentar (optional)</Label>
-            <TextArea 
-              value={formData.comment}
-              onChange={e => setFormData({...formData, comment: e.target.value})}
-              placeholder="Warum dieser Song?"
-            />
-          </FormGroup>
-          
-          <SubmitButton type="submit">Song einreichen 🎵</SubmitButton>
-          
-          {submitted && (
-            <Success>
-              <SuccessText>🎉 Danke! Dein Musikwunsch wurde gespeichert.</SuccessText>
-            </Success>
-          )}
-        </Form>
-        
-        {items.length > 0 && (
-          <SongList>
-            <SongListTitle>Bisherige Wünsche</SongListTitle>
-            {items.map((song, i) => (
-              <SongItem key={i} $index={i} $visible={visible}>
-                <SongNumber>{i + 1}</SongNumber>
-                <SongInfo>
-                  <SongTitle>{song.title}</SongTitle>
-                  <SongArtist>{song.artist}</SongArtist>
-                </SongInfo>
-                <SongBy>von {song.by}</SongBy>
-              </SongItem>
-            ))}
-          </SongList>
+        {submitted ? (
+          <Success>
+            <SuccessEmoji>🎉</SuccessEmoji>
+            <SuccessTitle>Song notiert!</SuccessTitle>
+          </Success>
+        ) : (
+          <Form $visible={visible} onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label>Dein Name</Label>
+              <Input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+            </FormGroup>
+            <FormRow>
+              <FormGroup>
+                <Label>Song</Label>
+                <Input type="text" value={formData.song} onChange={e => setFormData({ ...formData, song: e.target.value })} required />
+              </FormGroup>
+              <FormGroup>
+                <Label>Künstler</Label>
+                <Input type="text" value={formData.artist} onChange={e => setFormData({ ...formData, artist: e.target.value })} required />
+              </FormGroup>
+            </FormRow>
+            <FormGroup>
+              <Label>Nachricht (optional)</Label>
+              <Textarea value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
+            </FormGroup>
+            <SubmitButton type="submit">Song wünschen 🎶</SubmitButton>
+          </Form>
         )}
+        
+        {displayWishes.slice(0, 3).map((wish, i) => (
+          <WishCard key={i} $index={i} $visible={visible}>
+            <WishSong>🎵 {wish.song}</WishSong>
+            <WishArtist>{wish.artist}</WishArtist>
+            <WishBy>gewünscht von {wish.by}</WishBy>
+          </WishCard>
+        ))}
       </Container>
     </Section>
   );

@@ -1,268 +1,388 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const float = keyframes`
+const float1 = keyframes`
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(20px, -20px) rotate(5deg); }
-  50% { transform: translate(-10px, -30px) rotate(-5deg); }
-  75% { transform: translate(-20px, 10px) rotate(3deg); }
+  25% { transform: translate(15px, -15px) rotate(5deg); }
+  50% { transform: translate(-10px, -25px) rotate(-3deg); }
+  75% { transform: translate(-15px, 10px) rotate(3deg); }
 `;
 
-const pulse = keyframes`
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.2); opacity: 0.8; }
+const float2 = keyframes`
+  0%, 100% { transform: translate(0, 0) rotate(45deg); }
+  25% { transform: translate(10px, -10px) rotate(50deg); }
+  50% { transform: translate(-8px, -20px) rotate(42deg); }
+  75% { transform: translate(-10px, 8px) rotate(48deg); }
+`;
+
+const float3 = keyframes`
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(12px, -12px); }
+  66% { transform: translate(-8px, -18px); }
+`;
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+const bounce = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 `;
 
 const slideUp = keyframes`
-  from { opacity: 0; transform: translateY(60px); }
+  from { opacity: 0; transform: translateY(50px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const gradientMove = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+const expand = keyframes`
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 `;
 
 const Section = styled.section`
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
-  background-size: 400% 400%;
-  animation: ${gradientMove} 15s ease infinite;
-`;
-
-const IncludedBadge = styled.div`
-  position: absolute;
-  top: 100px;
-  right: 2rem;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  color: #fff;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
   
-  &::before { content: '✓'; }
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
 `;
 
-const FloatingBlob = styled.div`
-  position: absolute;
-  border-radius: 50%;
-  background: ${p => p.$gradient || 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
-  filter: blur(${p => p.$blur || '80px'});
-  opacity: ${p => p.$opacity || 0.5};
-  width: ${p => p.$size || '400px'};
-  height: ${p => p.$size || '400px'};
-  animation: ${float} ${p => p.$duration || '8s'} ease-in-out infinite;
-  animation-delay: ${p => p.$delay || '0s'};
-  pointer-events: none;
-`;
-
-const Content = styled.div`
+const LeftPanel = styled.div`
+  background: var(--white);
+  padding: 8rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
-  z-index: 10;
-  text-align: center;
-  max-width: 900px;
-  padding: 0 2rem;
+  z-index: 2;
+  
+  @media (max-width: 900px) {
+    padding: 8rem 2rem 4rem;
+    min-height: 60vh;
+  }
+`;
+
+const FloatingCircle1 = styled.div`
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--coral);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  border-radius: 50%;
+  top: 15%;
+  right: 15%;
+  animation: ${float1} 7s ease-in-out infinite;
+  z-index: 1;
+`;
+
+const FloatingSquare = styled.div`
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: var(--electric);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  bottom: 25%;
+  left: 10%;
+  animation: ${float2} 8s ease-in-out infinite;
+  animation-delay: 1s;
+  z-index: 1;
+`;
+
+const FloatingCircle2 = styled.div`
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  background: var(--yellow);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  border-radius: 50%;
+  top: 60%;
+  right: 25%;
+  animation: ${float3} 6s ease-in-out infinite;
+  animation-delay: 2s;
+  z-index: 1;
+`;
+
+const SpinningDecor = styled.div`
+  position: absolute;
+  bottom: 15%;
+  right: 10%;
+  width: 60px;
+  height: 60px;
+  border: 3px solid var(--black);
+  animation: ${spin} 20s linear infinite;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: var(--coral);
+    transform: translate(-50%, -50%);
+  }
 `;
 
 const Eyebrow = styled.div`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 1.5rem;
-  opacity: 0;
-  animation: ${slideUp} 0.8s ease forwards;
-  animation-delay: 0.2s;
-`;
-
-const Names = styled.h1`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(3.5rem, 14vw, 9rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 0.95;
-  margin-bottom: 2rem;
-  
-  .name {
-    display: block;
-    opacity: 0;
-    animation: ${slideUp} 0.8s ease forwards;
-    
-    &:nth-child(1) { animation-delay: 0.4s; }
-    &:nth-child(2) { animation-delay: 0.5s; }
-    &:nth-child(3) { animation-delay: 0.6s; }
-  }
-  
-  .ampersand {
-    font-size: 0.35em;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899, #F97316);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: inline-block;
-    margin: 0.3rem 0;
-    animation: ${pulse} 3s ease-in-out infinite;
-  }
-`;
-
-const DateBadge = styled.div`
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 1rem;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px);
-  padding: 1.25rem 2.5rem;
-  border-radius: 60px;
-  border: 1px solid rgba(255,255,255,0.2);
+  margin-bottom: 2rem;
   opacity: 0;
-  animation: ${slideUp} 0.8s ease forwards;
-  animation-delay: 0.8s;
+  animation: ${slideUp} 0.6s ease forwards 0.2s;
   
   span {
-    color: #fff;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .divider {
-    width: 6px;
-    height: 6px;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    border-radius: 50%;
-    animation: ${pulse} 2s ease-in-out infinite;
-  }
-`;
-
-const CTAButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  padding: 1rem 2.5rem;
-  border-radius: 50px;
-  text-decoration: none;
-  opacity: 0;
-  animation: ${slideUp} 0.8s ease forwards;
-  animation-delay: 1s;
-  box-shadow: 0 4px 30px rgba(139, 92, 246, 0.4);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 40px rgba(139, 92, 246, 0.5);
-  }
-`;
-
-const ScrollIndicator = styled.div`
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0;
-  animation: ${slideUp} 0.8s ease forwards;
-  animation-delay: 1.2s;
-  
-  span {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
+    color: var(--gray-600);
   }
+  
+  .line {
+    flex: 1;
+    height: 3px;
+    background: var(--black);
+    transform-origin: left;
+    animation: ${expand} 0.8s ease forwards 0.5s;
+    transform: scaleX(0);
+  }
+`;
+
+const NamesWrapper = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const NameLine1 = styled.h1`
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 700;
+  color: var(--black);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: ${slideUp} 0.8s ease forwards 0.4s;
+  
+  .highlight { color: var(--coral); }
+`;
+
+const NameLine2 = styled.h1`
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 700;
+  color: var(--black);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: ${slideUp} 0.8s ease forwards 0.5s;
+`;
+
+const Ampersand = styled.span`
+  display: inline-block;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 300;
+  color: var(--gray-400);
+  margin: 0 0.5rem;
+`;
+
+const Location = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: ${slideUp} 0.6s ease forwards 0.8s;
+  
+  span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    padding: 0.75rem 1.25rem;
+    background: var(--yellow);
+    border: 3px solid var(--black);
+    box-shadow: var(--shadow-sm);
+  }
+`;
+
+const CTAGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: ${slideUp} 0.6s ease forwards 1s;
+`;
+
+const PrimaryButton = styled.a`
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--coral);
+  padding: 1rem 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
+  }
+`;
+
+const SecondaryButton = styled.a`
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--black);
+  background: var(--white);
+  padding: 1rem 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: var(--electric);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
+  }
+`;
+
+const ScrollPrompt = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  left: 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gray-500);
+  opacity: 0;
+  animation: ${slideUp} 0.6s ease forwards 1.2s;
+  
+  @media (max-width: 900px) { left: 2rem; }
 `;
 
 const ScrollDot = styled.div`
-  width: 26px;
-  height: 44px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 13px;
+  width: 8px;
+  height: 8px;
+  background: var(--coral);
+  border: 2px solid var(--black);
+  animation: ${bounce} 2s ease-in-out infinite;
+`;
+
+const RightPanel = styled.div`
   position: relative;
+  overflow: hidden;
   
-  &::after {
+  @media (max-width: 900px) { min-height: 50vh; }
+`;
+
+const ParallaxImage = styled.div`
+  position: absolute;
+  inset: -10%;
+  background: linear-gradient(135deg, var(--coral), var(--electric), var(--yellow));
+  transform: translateY(${p => p.$scroll * 50}px);
+  transition: transform 0.1s ease-out;
+  
+  &::before {
     content: '';
     position: absolute;
-    top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 10px;
-    background: linear-gradient(180deg, #8B5CF6, #EC4899);
-    border-radius: 4px;
-    animation: ${pulse} 1.5s ease-in-out infinite;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px);
   }
 `;
 
-function Hero({ name1 = 'Sophie', name2 = 'Max', date = '15. August 2026', location = 'Schloss Heidelberg', showBadge = false }) {
-  const [loaded, setLoaded] = useState(false);
+const ImageOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.1);
+`;
+
+const DateBadge = styled.div`
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  padding: 1.5rem 3rem;
+  border: 4px solid var(--white);
+  box-shadow: var(--shadow-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+function Hero({ name1 = 'Sophie', name2 = 'Max', date = '15. August 2025', location = 'Berlin' }) {
+  const [scrollY, setScrollY] = useState(0);
+  const sectionRef = useRef(null);
 
   useEffect(() => {
-    setLoaded(true);
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, -rect.top / rect.height));
+        setScrollY(progress);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <Section id="top">
-      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
-      
-      <FloatingBlob $gradient="linear-gradient(135deg, #8B5CF6, #EC4899)" $size="500px" style={{ top: '5%', left: '-15%' }} $duration="10s" />
-      <FloatingBlob $gradient="linear-gradient(135deg, #EC4899, #F97316)" $size="400px" style={{ top: '50%', right: '-10%' }} $duration="12s" $delay="2s" />
-      <FloatingBlob $gradient="linear-gradient(135deg, #F97316, #8B5CF6)" $size="300px" style={{ bottom: '5%', left: '20%' }} $duration="8s" $delay="1s" $opacity="0.4" />
-      <FloatingBlob $gradient="linear-gradient(135deg, #667eea, #764ba2)" $size="250px" style={{ top: '30%', left: '10%' }} $duration="15s" $delay="3s" $opacity="0.3" />
-      
-      <Content>
-        <Eyebrow>Wir heiraten</Eyebrow>
-        <Names>
-          <span className="name">{name1}</span>
-          <span className="name ampersand">&</span>
-          <span className="name">{name2}</span>
-        </Names>
+    <Section ref={sectionRef} id="hero">
+      <LeftPanel>
+        <FloatingCircle1 />
+        <FloatingSquare />
+        <FloatingCircle2 />
+        <SpinningDecor />
         
-        <DateBadge>
-          <span>📅 {date}</span>
-          <div className="divider" />
-          <span>📍 {location}</span>
-        </DateBadge>
+        <Eyebrow>
+          <span>We're getting married</span>
+          <div className="line" />
+        </Eyebrow>
         
-        <CTAButton href="#rsvp">
-          Zur Zusage
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </CTAButton>
-      </Content>
+        <NamesWrapper>
+          <NameLine1><span className="highlight">{name1}</span></NameLine1>
+          <NameLine2><Ampersand>&</Ampersand>{name2}</NameLine2>
+        </NamesWrapper>
+        
+        <Location><span>📍 {location}</span></Location>
+        
+        <CTAGroup>
+          <PrimaryButton href="#rsvp">Jetzt Zusagen →</PrimaryButton>
+          <SecondaryButton href="#story">Unsere Story</SecondaryButton>
+        </CTAGroup>
+        
+        <ScrollPrompt>
+          <ScrollDot />
+          Scroll to explore
+        </ScrollPrompt>
+      </LeftPanel>
       
-      <ScrollIndicator>
-        <span>Scroll</span>
-        <ScrollDot />
-      </ScrollIndicator>
+      <RightPanel>
+        <ParallaxImage $scroll={scrollY} />
+        <ImageOverlay>
+          <DateBadge>{date}</DateBadge>
+        </ImageOverlay>
+      </RightPanel>
     </Section>
   );
 }

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: #fff;
+  background: var(--gray-100);
 `;
 
 const Container = styled.div`
@@ -16,37 +16,39 @@ const Header = styled.div`
   margin-bottom: 3rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transition: all 0.6s ease;
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #6b7280;
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
 `;
 
-const Form = styled.form`
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(236, 72, 153, 0.05));
-  border: 1px solid rgba(139, 92, 246, 0.1);
-  border-radius: 24px;
-  padding: 2rem;
+const FormCard = styled.form`
+  background: var(--white);
+  padding: 2.5rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-lg);
   margin-bottom: 3rem;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.2s;
+  transition: all 0.6s ease 0.2s;
 `;
 
 const FormRow = styled.div`
@@ -55,129 +57,147 @@ const FormRow = styled.div`
   gap: 1rem;
   margin-bottom: 1rem;
   
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: ${p => p.$full ? '1rem' : '0'};
+  margin-bottom: 1rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 1rem;
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #fff;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const TextArea = styled.textarea`
+const Textarea = styled.textarea`
   width: 100%;
   padding: 1rem;
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #fff;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
   min-height: 120px;
   resize: vertical;
-  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
 const SubmitButton = styled.button`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 50px;
+  width: 100%;
+  padding: 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--coral);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
   }
 `;
 
-const EntriesList = styled.div`
+const SuccessMsg = styled.div`
+  background: var(--electric);
+  color: var(--black);
+  padding: 1rem;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border: 2px solid var(--black);
+`;
+
+const EntriesGrid = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 `;
 
-const Entry = styled.div`
-  background: #f9fafb;
-  border-radius: 20px;
-  padding: 1.5rem 2rem;
-  border-left: 4px solid;
-  border-image: linear-gradient(180deg, #8B5CF6, #EC4899) 1;
+const colors = ['var(--coral)', 'var(--electric)', 'var(--yellow)', 'var(--purple)'];
+
+const EntryCard = styled.div`
+  background: var(--white);
+  padding: 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  border-left: 8px solid ${p => p.$color};
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.5s ease;
-  transition-delay: ${p => 0.3 + p.$index * 0.1}s;
+  transform: translateX(${p => p.$visible ? 0 : '-20px'});
+  transition: all 0.5s ease ${p => 0.3 + p.$index * 0.1}s;
+  
+  &:hover {
+    transform: translateX(5px);
+  }
 `;
 
-const EntryText = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.7;
-  margin-bottom: 1rem;
-  font-style: italic;
-`;
-
-const EntryMeta = styled.div`
+const EntryHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
 `;
 
-const EntryAuthor = styled.span`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1a1a2e;
+const EntryName = styled.h4`
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
 `;
 
 const EntryDate = styled.span`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.8rem;
-  color: #9ca3af;
+  font-size: 0.75rem;
+  color: var(--gray-500);
 `;
 
-function Guestbook({ title = 'Gästebuch 💝', subtitle = 'Hinterlasst uns einen lieben Gruß!', entries = [], onSubmit }) {
+const EntryMessage = styled.p`
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+  margin: 0;
+`;
+
+function Guestbook({ entries = [], onSubmit }) {
   const [visible, setVisible] = useState(false);
-  const [formData, setFormData] = useState({ name: '', message: '' });
-  const [submitted, setSubmitted] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const sectionRef = useRef(null);
 
   const defaultEntries = [
-    { name: 'Julia & Peter', message: 'Wir freuen uns so sehr für euch! Möge eure Liebe für immer strahlen. Alles Gute für eure gemeinsame Zukunft!', date: '10. Mai 2025' },
-    { name: 'Familie Schneider', message: 'Was für ein wundervolles Paar ihr seid. Wir können es kaum erwarten, mit euch zu feiern!', date: '8. Mai 2025' },
+    { name: 'Familie Weber', message: 'Wir freuen uns riesig auf euren großen Tag! Alles Liebe für eure gemeinsame Zukunft.', date: 'vor 2 Tagen' },
+    { name: 'Anna & Markus', message: 'Ihr seid das perfekte Paar! Können es kaum erwarten, mit euch zu feiern.', date: 'vor 5 Tagen' },
   ];
 
-  const items = entries.length > 0 ? entries : defaultEntries;
+  const displayEntries = entries.length > 0 ? entries : defaultEntries;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -191,40 +211,49 @@ function Guestbook({ title = 'Gästebuch 💝', subtitle = 'Hinterlasst uns eine
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (onSubmit) await onSubmit(formData);
-    setFormData({ name: '', message: '' });
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setSuccess(true);
+    setFormData({ name: '', email: '', message: '' });
+    setTimeout(() => setSuccess(false), 3000);
   };
 
   return (
     <Section ref={sectionRef} id="guestbook">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Eyebrow $visible={visible}>📝 Gästebuch</Eyebrow>
+          <Title $visible={visible}>Leave a Note</Title>
         </Header>
         
-        <Form $visible={visible} onSubmit={handleSubmit}>
+        <FormCard $visible={visible} onSubmit={handleSubmit}>
+          {success && <SuccessMsg>✓ Danke für deinen Eintrag!</SuccessMsg>}
           <FormRow>
-            <Input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Euer Name" required />
+            <FormGroup>
+              <Label>Name</Label>
+              <Input type="text" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+            </FormGroup>
+            <FormGroup>
+              <Label>Email</Label>
+              <Input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+            </FormGroup>
           </FormRow>
-          <FormGroup $full>
-            <TextArea value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} placeholder="Eure Nachricht..." required />
+          <FormGroup>
+            <Label>Nachricht</Label>
+            <Textarea value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} required />
           </FormGroup>
-          <SubmitButton type="submit">{submitted ? '✓ Gesendet!' : 'Eintragen ✨'}</SubmitButton>
-        </Form>
+          <SubmitButton type="submit">Eintrag absenden →</SubmitButton>
+        </FormCard>
         
-        <EntriesList>
-          {items.map((entry, i) => (
-            <Entry key={i} $index={i} $visible={visible}>
-              <EntryText>"{entry.message}"</EntryText>
-              <EntryMeta>
-                <EntryAuthor>— {entry.name}</EntryAuthor>
+        <EntriesGrid>
+          {displayEntries.map((entry, i) => (
+            <EntryCard key={i} $index={i} $visible={visible} $color={colors[i % colors.length]}>
+              <EntryHeader>
+                <EntryName>{entry.name}</EntryName>
                 <EntryDate>{entry.date}</EntryDate>
-              </EntryMeta>
-            </Entry>
+              </EntryHeader>
+              <EntryMessage>{entry.message}</EntryMessage>
+            </EntryCard>
           ))}
-        </EntriesList>
+        </EntriesGrid>
       </Container>
     </Section>
   );

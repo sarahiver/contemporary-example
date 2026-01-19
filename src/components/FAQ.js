@@ -1,13 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const popIn = keyframes`
+  from { transform: scale(0.8) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+`;
+
+const typing = keyframes`
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+`;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: #fafafa;
+  background: var(--gray-100);
 `;
 
 const Container = styled.div`
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
 `;
 
@@ -16,149 +26,230 @@ const Header = styled.div`
   margin-bottom: 3rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transition: all 0.6s ease;
 `;
 
-const QuestionList = styled.div`
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
+`;
+
+const ChatWindow = styled.div`
+  background: var(--white);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+`;
+
+const ChatHeader = styled.div`
+  background: var(--black);
+  padding: 1rem 1.5rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 1rem;
 `;
 
-const QuestionItem = styled.div`
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  border: 2px solid ${p => p.$open ? '#8B5CF6' : 'transparent'};
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.5s ease;
-  transition-delay: ${p => 0.1 + p.$index * 0.05}s;
-`;
-
-const QuestionHeader = styled.button`
-  width: 100%;
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-`;
-
-const QuestionText = styled.span`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1a1a2e;
-  padding-right: 1rem;
-`;
-
-const ToggleIcon = styled.div`
-  width: 36px;
-  height: 36px;
-  background: ${p => p.$open ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : '#f3f4f6'};
-  border-radius: 50%;
+const ChatAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  background: var(--coral);
+  border: 2px solid var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
+  font-size: 1.25rem;
+`;
+
+const ChatInfo = styled.div``;
+
+const ChatName = styled.div`
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+`;
+
+const ChatStatus = styled.div`
+  font-size: 0.7rem;
+  color: var(--electric);
+`;
+
+const ChatMessages = styled.div`
+  padding: 1.5rem;
+  max-height: 500px;
+  overflow-y: auto;
+`;
+
+const QuestionTabs = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--gray-100);
+  border-top: 2px solid var(--gray-200);
+`;
+
+const QuestionTab = styled.button`
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: ${p => p.$active ? 'var(--white)' : 'var(--gray-600)'};
+  background: ${p => p.$active ? 'var(--coral)' : 'var(--white)'};
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--black);
+  box-shadow: ${p => p.$active ? 'var(--shadow-sm)' : 'none'};
+  cursor: pointer;
+  transition: all 0.2s ease;
   
-  svg {
-    width: 16px;
-    height: 16px;
-    stroke: ${p => p.$open ? '#fff' : '#6b7280'};
-    transition: transform 0.3s ease;
-    transform: rotate(${p => p.$open ? '180deg' : '0'});
+  &:hover {
+    background: ${p => p.$active ? 'var(--coral)' : 'var(--yellow)'};
   }
 `;
 
-const AnswerWrapper = styled.div`
-  max-height: ${p => p.$open ? '500px' : '0'};
-  overflow: hidden;
-  transition: max-height 0.4s ease;
+const MessageGroup = styled.div`
+  margin-bottom: 1.5rem;
+  animation: ${popIn} 0.4s ease;
 `;
 
-const Answer = styled.div`
-  padding: 0 1.5rem 1.5rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.95rem;
-  color: #6b7280;
-  line-height: 1.7;
+const QuestionBubble = styled.div`
+  background: var(--gray-100);
+  padding: 1rem 1.25rem;
+  max-width: 85%;
+  margin-bottom: 0.75rem;
+  border: 2px solid var(--gray-300);
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 15px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 10px solid var(--gray-300);
+  }
+`;
+
+const AnswerBubble = styled.div`
+  background: var(--coral);
+  color: var(--white);
+  padding: 1rem 1.25rem;
+  max-width: 85%;
+  margin-left: auto;
+  border: 2px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 15px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 10px solid var(--black);
+  }
+`;
+
+const BubbleText = styled.p`
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+`;
+
+const BubbleTime = styled.span`
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.7;
+  margin-top: 0.5rem;
+  text-align: right;
+`;
+
+const TypingIndicator = styled.div`
+  display: flex;
+  gap: 4px;
+  padding: 1rem;
+  background: var(--coral);
+  width: fit-content;
+  margin-left: auto;
+  border: 2px solid var(--black);
+`;
+
+const TypingDot = styled.span`
+  width: 8px;
+  height: 8px;
+  background: var(--white);
+  animation: ${typing} 1.4s ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
 `;
 
 const ContactBox = styled.div`
-  margin-top: 3rem;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border-radius: 24px;
-  padding: 2.5rem;
+  background: var(--yellow);
+  padding: 1.5rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  margin-top: 2rem;
   text-align: center;
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.5s;
-`;
-
-const ContactTitle = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.5rem;
 `;
 
 const ContactText = styled.p`
-  font-family: 'Sora', sans-serif;
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 1.5rem;
+  color: var(--black);
+  margin-bottom: 1rem;
 `;
 
 const ContactButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #8B5CF6;
-  background: #fff;
-  padding: 0.875rem 1.75rem;
-  border-radius: 50px;
-  transition: all 0.3s ease;
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--black);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    background: var(--coral);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--black);
   }
 `;
 
-function FAQ({ title = "We've got answers", faqs = [], contactEmail = 'hochzeit@email.de' }) {
+function FAQ({ questions = [] }) {
   const [visible, setVisible] = useState(false);
-  const [openIndex, setOpenIndex] = useState(null);
+  const [activeQ, setActiveQ] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
   const sectionRef = useRef(null);
 
-  const defaultFaqs = [
-    { question: 'Gibt es einen Dresscode?', answer: 'Elegante Abendgarderobe! Die Herren gerne im Anzug, die Damen im Cocktail- oder Abendkleid. Bitte vermeidet Weiß – das ist der Braut vorbehalten. 👗' },
-    { question: 'Kann ich jemanden mitbringen?', answer: 'Bitte habt Verständnis, dass wir nur die auf der Einladung genannten Personen empfangen können. Bei Fragen meldet euch gerne bei uns!' },
-    { question: 'Sind Kinder willkommen?', answer: 'Wir haben uns für eine Feier nur für Erwachsene entschieden, damit alle entspannt feiern können. Wir hoffen auf euer Verständnis. 💕' },
-    { question: 'Gibt es Parkplätze vor Ort?', answer: 'Ja! Kostenlose Parkplätze sind direkt an der Location vorhanden. Folgt einfach der Beschilderung. 🚗' },
-    { question: 'Bis wann muss ich zusagen?', answer: 'Bitte gebt uns bis zum 15. Juni Bescheid, ob ihr dabei seid. Das hilft uns sehr bei der Planung! ⏰' },
-    { question: 'Darf ich fotografieren?', answer: 'Während der Zeremonie bitten wir euch, keine Fotos zu machen – unser Fotograf hält alles fest. Bei der Feier dürft ihr natürlich knipsen! 📸' },
+  const defaultQuestions = [
+    { q: 'Was ist der Dresscode?', a: 'Smart Casual bis Festlich. Hauptsache, ihr fühlt euch wohl und seid bereit zu tanzen!' },
+    { q: 'Kann ich +1 mitbringen?', a: 'Bitte nur, wenn auf eurer Einladung explizit erwähnt. Meldet euch bei uns, falls Fragen!' },
+    { q: 'Sind Kinder willkommen?', a: 'Wir feiern adults-only, damit alle richtig feiern können. Danke für euer Verständnis!' },
+    { q: 'Wo kann ich parken?', a: 'Kostenlose Parkplätze direkt vor der Location. Alternativ: Taxi-Service ab 23 Uhr.' },
+    { q: 'Bis wann muss ich zusagen?', a: 'Bitte bis spätestens 4 Wochen vor der Hochzeit. Hilft uns bei der Planung enorm!' },
   ];
 
-  const items = faqs.length > 0 ? faqs : defaultFaqs;
+  const items = questions.length > 0 ? questions : defaultQuestions;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -169,42 +260,63 @@ function FAQ({ title = "We've got answers", faqs = [], contactEmail = 'hochzeit@
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    setShowAnswer(false);
+    const timer = setTimeout(() => setShowAnswer(true), 800);
+    return () => clearTimeout(timer);
+  }, [activeQ]);
+
   return (
     <Section ref={sectionRef} id="faq">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
+          <Eyebrow $visible={visible}>❓ FAQ</Eyebrow>
+          <Title $visible={visible}>Got Questions?</Title>
         </Header>
         
-        <QuestionList>
-          {items.map((item, i) => (
-            <QuestionItem 
-              key={i} 
-              $index={i} 
-              $visible={visible}
-              $open={openIndex === i}
-            >
-              <QuestionHeader onClick={() => setOpenIndex(openIndex === i ? null : i)}>
-                <QuestionText>{item.question}</QuestionText>
-                <ToggleIcon $open={openIndex === i}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </ToggleIcon>
-              </QuestionHeader>
-              <AnswerWrapper $open={openIndex === i}>
-                <Answer>{item.answer}</Answer>
-              </AnswerWrapper>
-            </QuestionItem>
-          ))}
-        </QuestionList>
+        <ChatWindow>
+          <ChatHeader>
+            <ChatAvatar>💍</ChatAvatar>
+            <ChatInfo>
+              <ChatName>Sophie & Max</ChatName>
+              <ChatStatus>● Online</ChatStatus>
+            </ChatInfo>
+          </ChatHeader>
+          
+          <ChatMessages>
+            <MessageGroup key={activeQ}>
+              <QuestionBubble>
+                <BubbleText>{items[activeQ].q}</BubbleText>
+                <BubbleTime>Jetzt</BubbleTime>
+              </QuestionBubble>
+              
+              {showAnswer ? (
+                <AnswerBubble>
+                  <BubbleText>{items[activeQ].a}</BubbleText>
+                  <BubbleTime>✓✓</BubbleTime>
+                </AnswerBubble>
+              ) : (
+                <TypingIndicator>
+                  <TypingDot $delay="0s" />
+                  <TypingDot $delay="0.2s" />
+                  <TypingDot $delay="0.4s" />
+                </TypingIndicator>
+              )}
+            </MessageGroup>
+          </ChatMessages>
+          
+          <QuestionTabs>
+            {items.map((item, i) => (
+              <QuestionTab key={i} $active={activeQ === i} onClick={() => setActiveQ(i)}>
+                {item.q.split(' ').slice(0, 3).join(' ')}...
+              </QuestionTab>
+            ))}
+          </QuestionTabs>
+        </ChatWindow>
         
-        <ContactBox $visible={visible}>
-          <ContactTitle>Noch Fragen? 🤔</ContactTitle>
-          <ContactText>Wir helfen euch gerne weiter!</ContactText>
-          <ContactButton href={`mailto:${contactEmail}`}>
-            E-Mail schreiben →
-          </ContactButton>
+        <ContactBox>
+          <ContactText>Noch mehr Fragen? Schreib uns!</ContactText>
+          <ContactButton href="mailto:hallo@sophie-max.de">Email senden →</ContactButton>
         </ContactBox>
       </Container>
     </Section>

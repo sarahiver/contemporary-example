@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: #fafafa;
+  background: var(--black);
 `;
 
 const Container = styled.div`
@@ -16,25 +16,28 @@ const Header = styled.div`
   margin-bottom: 4rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transition: all 0.6s ease;
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #6b7280;
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--white);
+  text-transform: uppercase;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
 `;
 
 const Grid = styled.div`
@@ -48,150 +51,113 @@ const Grid = styled.div`
 `;
 
 const MapWrapper = styled.div`
-  border-radius: 24px;
-  overflow: hidden;
+  background: var(--gray-800);
+  border: 3px solid var(--gray-600);
   height: 400px;
-  background: linear-gradient(135deg, #e0e7ff, #fce7f3);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.2s;
-  
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-`;
-
-const DirectionsContent = styled.div`
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.3s;
-`;
-
-const DirectionCard = styled.div`
-  background: #fff;
-  border-radius: 20px;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  display: flex;
-  gap: 1.25rem;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateX(10px);
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
-  }
-`;
-
-const IconWrapper = styled.div`
-  width: 50px;
-  height: 50px;
-  background: ${p => p.$gradient || 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
-  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateX(${p => p.$visible ? 0 : '-30px'});
+  transition: all 0.6s ease 0.2s;
 `;
 
-const CardContent = styled.div`
-  flex: 1;
+const MapPlaceholder = styled.div`
+  text-align: center;
+  color: var(--gray-500);
 `;
 
-const CardTitle = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
+const InfoPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateX(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.3s;
 `;
 
-const CardText = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  color: #6b7280;
-  line-height: 1.6;
-  margin: 0;
-`;
+const colors = ['var(--coral)', 'var(--electric)', 'var(--yellow)'];
 
-const AddressBox = styled.div`
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-top: 1.5rem;
-  color: #fff;
-`;
-
-const AddressTitle = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-`;
-
-const AddressText = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
-  opacity: 0.95;
-`;
-
-const AddressButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #8B5CF6;
-  background: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
+const InfoCard = styled.div`
+  background: var(--gray-800);
+  border: 3px solid ${p => p.$color || 'var(--gray-600)'};
+  padding: 1.5rem;
   transition: all 0.3s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transform: translateX(8px);
+    box-shadow: -8px 0 0 ${p => p.$color || 'var(--coral)'};
   }
 `;
 
-function Directions({ 
-  title = 'Anfahrt 🗺️', 
-  subtitle = 'So findet ihr zu uns.',
-  address = 'Schloss Heidelberg\nSchlosshof 1\n69117 Heidelberg',
-  mapEmbedUrl = '',
-  mapsLink = 'https://maps.google.com'
-}) {
+const InfoIcon = styled.div`
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+`;
+
+const InfoTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+`;
+
+const InfoText = styled.p`
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  line-height: 1.5;
+  margin: 0;
+`;
+
+const TransportGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+  
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const TransportCard = styled.div`
+  background: ${p => p.$color};
+  padding: 1.5rem;
+  border: 3px solid var(--black);
+  text-align: center;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.5s ease ${p => 0.4 + p.$index * 0.1}s;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+  }
+`;
+
+const TransportIcon = styled.div`
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+`;
+
+const TransportTitle = styled.h4`
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+`;
+
+const TransportDesc = styled.p`
+  font-size: 0.75rem;
+  color: rgba(0,0,0,0.7);
+  margin: 0;
+`;
+
+function Directions({ address = 'Schloss Heidelberg, 69117 Heidelberg' }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
-
-  const directions = [
-    { 
-      icon: '🚗', 
-      title: 'Mit dem Auto', 
-      text: 'Über die A5, Ausfahrt Heidelberg. Parkplätze sind direkt am Schloss vorhanden (kostenfrei).',
-      gradient: 'linear-gradient(135deg, #8B5CF6, #7c3aed)'
-    },
-    { 
-      icon: '🚆', 
-      title: 'Mit der Bahn', 
-      text: 'Bis Heidelberg Hbf. Von dort mit der Bergbahn (Linie 1) direkt zum Schloss.',
-      gradient: 'linear-gradient(135deg, #EC4899, #db2777)'
-    },
-    { 
-      icon: '✈️', 
-      title: 'Mit dem Flugzeug', 
-      text: 'Nächster Flughafen: Frankfurt (FRA), ca. 80 km entfernt. Von dort Direktverbindung mit der Bahn.',
-      gradient: 'linear-gradient(135deg, #F97316, #ea580c)'
-    },
-  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -206,47 +172,51 @@ function Directions({
     <Section ref={sectionRef} id="directions">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Eyebrow $visible={visible}>🗺️ Navigation</Eyebrow>
+          <Title $visible={visible}>Get There</Title>
         </Header>
         
         <Grid>
           <MapWrapper $visible={visible}>
-            {mapEmbedUrl ? (
-              <iframe 
-                src={mapEmbedUrl}
-                title="Location Map"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280', fontFamily: 'Sora' }}>
-                🗺️ Karte wird geladen...
-              </div>
-            )}
+            <MapPlaceholder>📍 Karte<br /><small>{address}</small></MapPlaceholder>
           </MapWrapper>
           
-          <DirectionsContent $visible={visible}>
-            {directions.map((dir, i) => (
-              <DirectionCard key={i}>
-                <IconWrapper $gradient={dir.gradient}>{dir.icon}</IconWrapper>
-                <CardContent>
-                  <CardTitle>{dir.title}</CardTitle>
-                  <CardText>{dir.text}</CardText>
-                </CardContent>
-              </DirectionCard>
-            ))}
-            
-            <AddressBox>
-              <AddressTitle>📍 Adresse</AddressTitle>
-              <AddressText style={{ whiteSpace: 'pre-line' }}>{address}</AddressText>
-              <AddressButton href={mapsLink} target="_blank" rel="noopener noreferrer">
-                In Google Maps öffnen
-                <span>→</span>
-              </AddressButton>
-            </AddressBox>
-          </DirectionsContent>
+          <InfoPanel $visible={visible}>
+            <InfoCard $color={colors[0]}>
+              <InfoIcon>📍</InfoIcon>
+              <InfoTitle>Adresse</InfoTitle>
+              <InfoText>{address}</InfoText>
+            </InfoCard>
+            <InfoCard $color={colors[1]}>
+              <InfoIcon>🅿️</InfoIcon>
+              <InfoTitle>Parken</InfoTitle>
+              <InfoText>Kostenlose Parkplätze direkt vor der Location</InfoText>
+            </InfoCard>
+            <InfoCard $color={colors[2]}>
+              <InfoIcon>🚕</InfoIcon>
+              <InfoTitle>Taxi</InfoTitle>
+              <InfoText>Taxi Heidelberg: +49 6221 302030</InfoText>
+            </InfoCard>
+          </InfoPanel>
         </Grid>
+        
+        <TransportGrid>
+          <TransportCard $color="var(--coral)" $index={0} $visible={visible}>
+            <TransportIcon>🚗</TransportIcon>
+            <TransportTitle>Auto</TransportTitle>
+            <TransportDesc>A5 Ausfahrt Heidelberg</TransportDesc>
+          </TransportCard>
+          <TransportCard $color="var(--electric)" $index={1} $visible={visible}>
+            <TransportIcon>🚂</TransportIcon>
+            <TransportTitle>Bahn</TransportTitle>
+            <TransportDesc>Heidelberg Hbf, Bus 33</TransportDesc>
+          </TransportCard>
+          <TransportCard $color="var(--yellow)" $index={2} $visible={visible}>
+            <TransportIcon>✈️</TransportIcon>
+            <TransportTitle>Flug</TransportTitle>
+            <TransportDesc>Frankfurt, ICE 45 Min</TransportDesc>
+          </TransportCard>
+        </TransportGrid>
       </Container>
     </Section>
   );

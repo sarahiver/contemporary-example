@@ -1,80 +1,117 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+`;
+
+const slideIn = keyframes`
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, var(--coral), var(--electric));
   position: relative;
-  overflow: hidden;
-`;
-
-const IncludedBadge = styled.div`
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.4rem 0.8rem;
-  border-radius: 50px;
-  border: 1px solid rgba(255,255,255,0.3);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  
-  &::before { content: '✓'; }
 `;
 
 const Container = styled.div`
-  max-width: 550px;
+  max-width: 600px;
   margin: 0 auto;
 `;
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 `;
 
 const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.5rem;
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-`;
-
-const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: rgba(255,255,255,0.85);
-  opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
-`;
-
-const Form = styled.form`
-  background: #fff;
-  padding: 2.5rem;
-  border-radius: 24px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.2s;
+  transition: all 0.6s ease;
+`;
+
+const Card = styled.div`
+  background: var(--white);
+  padding: 3rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-xl);
+  
+  @media (max-width: 500px) {
+    padding: 2rem 1.5rem;
+  }
+`;
+
+const ProgressBar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gray-200);
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    background: var(--coral);
+    transform: translateY(-50%);
+    z-index: 1;
+    width: ${p => ((p.$step - 1) / (p.$total - 1)) * 100}%;
+    transition: width 0.5s ease;
+  }
+`;
+
+const StepDot = styled.div`
+  width: 40px;
+  height: 40px;
+  background: ${p => p.$active ? 'var(--coral)' : p.$completed ? 'var(--electric)' : 'var(--gray-200)'};
+  border: 3px solid var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: ${p => (p.$active || p.$completed) ? 'var(--white)' : 'var(--gray-500)'};
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+`;
+
+const StepDotActive = styled(StepDot)`
+  animation: ${pulse} 1.5s ease-in-out infinite;
+`;
+
+const StepContent = styled.div`
+  animation: ${slideIn} 0.4s ease;
+`;
+
+const StepTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  text-align: center;
 `;
 
 const FormGroup = styled.div`
@@ -83,180 +120,157 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   display: block;
-  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--gray-600);
   margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: 'Sora', sans-serif;
+  padding: 1rem;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
+  transition: all 0.2s ease;
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
-`;
-
-const RadioGroup = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const RadioLabel = styled.label`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: ${p => p.$checked ? '#fff' : '#6b7280'};
-  background: ${p => p.$checked ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : '#f9fafb'};
-  border: 2px solid ${p => p.$checked ? 'transparent' : '#e5e7eb'};
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    border-color: ${p => p.$checked ? 'transparent' : '#8B5CF6'};
-  }
-  
-  input { display: none; }
 `;
 
 const Select = styled.select`
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: 'Sora', sans-serif;
+  padding: 1rem;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
   cursor: pointer;
-  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const TextArea = styled.textarea`
+const Textarea = styled.textarea`
   width: 100%;
-  padding: 1rem 1.25rem;
-  font-family: 'Sora', sans-serif;
+  padding: 1rem;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
   min-height: 100px;
   resize: vertical;
-  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const SubmitButton = styled.button`
-  width: 100%;
-  padding: 1.25rem 2rem;
-  font-family: 'Sora', sans-serif;
+const ToggleGroup = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+`;
+
+const ToggleButton = styled.button`
+  padding: 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border: none;
-  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: ${p => p.$active ? (p.$yes ? 'var(--electric)' : 'var(--coral)') : 'var(--gray-100)'};
+  color: ${p => p.$active ? 'var(--white)' : 'var(--gray-600)'};
+  border: 3px solid var(--black);
+  box-shadow: ${p => p.$active ? 'var(--shadow-md)' : 'none'};
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    background-size: 200% 100%;
-    animation: ${shimmer} 2s linear infinite;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
-    
-    &::before { opacity: 1; }
+    background: ${p => p.$yes ? 'var(--electric)' : 'var(--coral)'};
+    color: var(--white);
+  }
+  
+  .emoji {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const NavButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
+const NavBtn = styled.button`
+  flex: 1;
+  padding: 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: ${p => p.$primary ? 'var(--coral)' : 'var(--white)'};
+  color: ${p => p.$primary ? 'var(--white)' : 'var(--black)'};
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-md);
   }
   
   &:disabled {
-    background: #e5e7eb;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
   }
 `;
 
-const Success = styled.div`
+const SuccessState = styled.div`
   text-align: center;
-  padding: 3rem;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  padding: 2rem;
 `;
 
-const SuccessIcon = styled.div`
-  font-size: 4rem;
+const SuccessEmoji = styled.div`
+  font-size: 5rem;
   margin-bottom: 1rem;
 `;
 
 const SuccessTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 `;
 
 const SuccessText = styled.p`
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--gray-600);
 `;
 
-function RSVP({ title = 'RSVP', subtitle = 'Bitte lasst uns bis zum 15. Juni wissen, ob ihr dabei seid.', onSubmit, showBadge = false }) {
+function RSVP({ onSubmit }) {
   const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
-  const [attending, setAttending] = useState(null);
-  const [formData, setFormData] = useState({ name: '', email: '', guests: '1', menu: '', dietary: '', message: '' });
+  const [formData, setFormData] = useState({
+    name: '', email: '', attending: null, guests: '1', menu: '', dietary: '', song: '', message: ''
+  });
   const sectionRef = useRef(null);
+  const totalSteps = 3;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -267,24 +281,49 @@ function RSVP({ title = 'RSVP', subtitle = 'Bitte lasst uns bis zum 15. Juni wis
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (onSubmit) await onSubmit({ ...formData, attending });
+  const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
+  const canProceed = () => {
+    if (step === 1) return formData.name && formData.email;
+    if (step === 2) return formData.attending !== null;
+    return true;
+  };
+
+  const handleNext = () => {
+    if (step < totalSteps) setStep(step + 1);
+    else handleSubmit();
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleSubmit = async () => {
+    if (onSubmit) await onSubmit(formData);
     setSubmitted(true);
+  };
+
+  const renderStepDot = (i) => {
+    const isActive = step === i;
+    const isCompleted = step > i;
+    
+    if (isActive) {
+      return <StepDotActive key={i} $active={true}>{i}</StepDotActive>;
+    }
+    return <StepDot key={i} $completed={isCompleted}>{isCompleted ? '✓' : i}</StepDot>;
   };
 
   if (submitted) {
     return (
       <Section ref={sectionRef} id="rsvp">
-        {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
         <Container>
-          <Success>
-            <SuccessIcon>{attending === 'yes' ? '🎉' : '💕'}</SuccessIcon>
-            <SuccessTitle>{attending === 'yes' ? 'Awesome!' : 'Danke!'}</SuccessTitle>
-            <SuccessText>
-              {attending === 'yes' ? 'Wir freuen uns riesig auf euch!' : 'Schade, aber wir verstehen das. Wir denken an euch!'}
-            </SuccessText>
-          </Success>
+          <Card>
+            <SuccessState>
+              <SuccessEmoji>🎉</SuccessEmoji>
+              <SuccessTitle>Epic!</SuccessTitle>
+              <SuccessText>Deine Antwort ist eingegangen. Wir freuen uns auf dich!</SuccessText>
+            </SuccessState>
+          </Card>
         </Container>
       </Section>
     );
@@ -292,95 +331,90 @@ function RSVP({ title = 'RSVP', subtitle = 'Bitte lasst uns bis zum 15. Juni wis
 
   return (
     <Section ref={sectionRef} id="rsvp">
-      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Title $visible={visible}>RSVP</Title>
         </Header>
         
-        <Form $visible={visible} onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label>Name *</Label>
-            <Input 
-              type="text" 
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Vor- und Nachname"
-              required 
-            />
-          </FormGroup>
+        <Card>
+          <ProgressBar $step={step} $total={totalSteps}>
+            {[1, 2, 3].map(i => renderStepDot(i))}
+          </ProgressBar>
           
-          <FormGroup>
-            <Label>E-Mail *</Label>
-            <Input 
-              type="email"
-              value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
-              placeholder="email@beispiel.de"
-              required 
-            />
-          </FormGroup>
+          <StepContent key={step}>
+            {step === 1 && (
+              <>
+                <StepTitle>Wer bist du?</StepTitle>
+                <FormGroup>
+                  <Label>Name</Label>
+                  <Input type="text" placeholder="Max Mustermann" value={formData.name} onChange={e => updateField('name', e.target.value)} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Email</Label>
+                  <Input type="email" placeholder="max@example.com" value={formData.email} onChange={e => updateField('email', e.target.value)} />
+                </FormGroup>
+              </>
+            )}
+            
+            {step === 2 && (
+              <>
+                <StepTitle>Kommst du?</StepTitle>
+                <ToggleGroup>
+                  <ToggleButton $yes $active={formData.attending === true} onClick={() => updateField('attending', true)}>
+                    <span className="emoji">🎉</span>
+                    Hell Yeah!
+                  </ToggleButton>
+                  <ToggleButton $active={formData.attending === false} onClick={() => updateField('attending', false)}>
+                    <span className="emoji">😢</span>
+                    Can't make it
+                  </ToggleButton>
+                </ToggleGroup>
+                
+                {formData.attending === true && (
+                  <>
+                    <FormGroup style={{ marginTop: '2rem' }}>
+                      <Label>Anzahl Gäste</Label>
+                      <Select value={formData.guests} onChange={e => updateField('guests', e.target.value)}>
+                        {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
+                      </Select>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label>Menüwahl</Label>
+                      <Select value={formData.menu} onChange={e => updateField('menu', e.target.value)}>
+                        <option value="">Bitte wählen...</option>
+                        <option value="fleisch">🥩 Fleisch</option>
+                        <option value="fisch">🐟 Fisch</option>
+                        <option value="veggie">🥗 Vegetarisch</option>
+                        <option value="vegan">🌱 Vegan</option>
+                      </Select>
+                    </FormGroup>
+                  </>
+                )}
+              </>
+            )}
+            
+            {step === 3 && (
+              <>
+                <StepTitle>Noch was?</StepTitle>
+                <FormGroup>
+                  <Label>Songwunsch (optional)</Label>
+                  <Input type="text" placeholder="Welcher Song bringt dich auf die Tanzfläche?" value={formData.song} onChange={e => updateField('song', e.target.value)} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Nachricht (optional)</Label>
+                  <Textarea placeholder="Grüße, Wünsche, Allergien..." value={formData.message} onChange={e => updateField('message', e.target.value)} />
+                </FormGroup>
+              </>
+            )}
+          </StepContent>
           
-          <FormGroup>
-            <Label>Bist du dabei? *</Label>
-            <RadioGroup>
-              <RadioLabel $checked={attending === 'yes'}>
-                <input type="radio" name="attending" checked={attending === 'yes'} onChange={() => setAttending('yes')} />
-                🎉 Ja, klar!
-              </RadioLabel>
-              <RadioLabel $checked={attending === 'no'}>
-                <input type="radio" name="attending" checked={attending === 'no'} onChange={() => setAttending('no')} />
-                😢 Leider nein
-              </RadioLabel>
-            </RadioGroup>
-          </FormGroup>
-          
-          {attending === 'yes' && (
-            <>
-              <FormGroup>
-                <Label>Anzahl Gäste</Label>
-                <Select value={formData.guests} onChange={e => setFormData({ ...formData, guests: e.target.value })}>
-                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Person' : 'Personen'}</option>)}
-                </Select>
-              </FormGroup>
-              
-              <FormGroup>
-                <Label>Menüwahl</Label>
-                <Select value={formData.menu} onChange={e => setFormData({ ...formData, menu: e.target.value })}>
-                  <option value="">Bitte auswählen</option>
-                  <option value="meat">🥩 Fleisch</option>
-                  <option value="fish">🐟 Fisch</option>
-                  <option value="veggie">🥗 Vegetarisch</option>
-                  <option value="vegan">🌱 Vegan</option>
-                </Select>
-              </FormGroup>
-              
-              <FormGroup>
-                <Label>Allergien / Unverträglichkeiten</Label>
-                <Input 
-                  type="text"
-                  value={formData.dietary}
-                  onChange={e => setFormData({ ...formData, dietary: e.target.value })}
-                  placeholder="z.B. Laktoseintoleranz, Nussallergie..."
-                />
-              </FormGroup>
-            </>
-          )}
-          
-          <FormGroup>
-            <Label>Nachricht (optional)</Label>
-            <TextArea 
-              value={formData.message}
-              onChange={e => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Noch etwas, das wir wissen sollten?"
-            />
-          </FormGroup>
-          
-          <SubmitButton type="submit" disabled={attending === null}>
-            Absenden ✨
-          </SubmitButton>
-        </Form>
+          <NavButtons>
+            <NavBtn onClick={handleBack} disabled={step === 1}>← Back</NavBtn>
+            <NavBtn $primary onClick={handleNext} disabled={!canProceed()}>
+              {step === totalSteps ? 'Submit →' : 'Next →'}
+            </NavBtn>
+          </NavButtons>
+        </Card>
       </Container>
     </Section>
   );

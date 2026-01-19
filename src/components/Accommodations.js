@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: #fff;
+  background: var(--white);
 `;
 
 const Container = styled.div`
@@ -16,173 +16,172 @@ const Header = styled.div`
   margin-bottom: 4rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transition: all 0.6s ease;
 `;
 
-const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #6b7280;
-  max-width: 500px;
-  margin: 0 auto;
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
 `;
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
 `;
 
+const colors = ['var(--coral)', 'var(--electric)', 'var(--yellow)'];
+
 const Card = styled.div`
-  background: #f9fafb;
-  border-radius: 24px;
+  background: var(--white);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  border: 2px solid transparent;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: ${p => 0.2 + p.$index * 0.1}s;
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
+  transition: all 0.6s ease ${p => 0.2 + p.$index * 0.1}s;
   
   &:hover {
-    border-color: #8B5CF6;
-    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.15);
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
   }
 `;
 
 const CardImage = styled.div`
-  width: 100%;
   height: 180px;
-  background: ${p => p.$image ? `url(${p.$image}) center/cover` : 'linear-gradient(135deg, #e0e7ff, #fce7f3)'};
+  background: ${p => p.$color};
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
 `;
 
-const RecommendedBadge = styled.div`
+const PriceBadge = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--black);
+`;
+
+const RecommendBadge = styled.div`
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  color: #fff;
-  font-family: 'Sora', sans-serif;
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.4rem 0.8rem;
-  border-radius: 50px;
+  color: var(--black);
+  background: var(--yellow);
+  padding: 0.35rem 0.7rem;
+  border: 2px solid var(--black);
 `;
 
 const CardContent = styled.div`
   padding: 1.5rem;
 `;
 
-const CardName = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
+const CardTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 `;
 
-const CardDistance = styled.div`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.8rem;
-  color: #8B5CF6;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const CardDesc = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  color: #6b7280;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-`;
-
-const CardPrice = styled.div`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 1rem;
-  
-  span { font-size: 0.85rem; font-weight: 400; color: #6b7280; }
-`;
-
-const CardButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Sora', sans-serif;
+const CardLocation = styled.p`
   font-size: 0.85rem;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+`;
+
+const Features = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+`;
+
+const Feature = styled.span`
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  transition: all 0.3s ease;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--gray-300);
+`;
+
+const BookButton = styled.a`
+  display: block;
+  width: 100%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--coral);
+  padding: 1rem;
+  border: 2px solid var(--black);
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+    background: var(--black);
   }
 `;
 
-const Note = styled.div`
+const TipBox = styled.div`
   margin-top: 3rem;
-  background: #f9fafb;
-  border-radius: 20px;
-  padding: 2rem;
-  border-left: 4px solid #8B5CF6;
+  background: var(--electric);
+  padding: 1.5rem 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-align: center;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.5s;
+  transition: all 0.6s ease 0.5s;
 `;
 
-const NoteTitle = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-`;
-
-const NoteText = styled.p`
-  font-family: 'Sora', sans-serif;
+const TipText = styled.p`
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--black);
   margin: 0;
   
-  strong { color: #8B5CF6; }
+  strong { font-weight: 700; }
 `;
 
-function Accommodations({ title = 'Unterkünfte 🏨', subtitle = 'Wir haben einige Hotels in der Nähe für euch zusammengestellt.', accommodations = [], bookingCode = 'Hochzeit Sophie & Max' }) {
+function Accommodations({ hotels = [] }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
 
-  const defaultAccommodations = [
-    { name: 'Hotel Schlossblick', distance: '500m zur Location', description: 'Unser Top-Tipp! Wir haben ein Kontingent reserviert.', price: 'ab 120€', url: '#', image: null, recommended: true },
-    { name: 'Boutique Hotel Am Markt', distance: '1,2 km zur Location', description: 'Charmantes Hotel in der Altstadt mit modernem Design.', price: 'ab 95€', url: '#', image: null },
-    { name: 'Pension Heidelberg', distance: '800m zur Location', description: 'Gemütliche Pension mit familiärer Atmosphäre.', price: 'ab 65€', url: '#', image: null },
+  const defaultHotels = [
+    { name: 'Hotel Heidelberg', location: '500m zur Location', price: 'ab €129', features: ['Spa', 'Frühstück', 'Parken'], recommended: true, emoji: '🏨' },
+    { name: 'Boutique Rose', location: '1.2km zur Location', price: 'ab €99', features: ['Charme', 'Frühstück'], emoji: '🌹' },
+    { name: 'Hotel am Schloss', location: '300m zur Location', price: 'ab €149', features: ['Luxus', 'Restaurant'], emoji: '🏰' },
   ];
 
-  const items = accommodations.length > 0 ? accommodations : defaultAccommodations;
+  const items = hotels.length > 0 ? hotels : defaultHotels;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -197,31 +196,35 @@ function Accommodations({ title = 'Unterkünfte 🏨', subtitle = 'Wir haben ein
     <Section ref={sectionRef} id="accommodations">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Eyebrow $visible={visible}>🏨 Übernachtung</Eyebrow>
+          <Title $visible={visible}>Where to Stay</Title>
         </Header>
         
         <Grid>
-          {items.map((acc, i) => (
+          {items.map((hotel, i) => (
             <Card key={i} $index={i} $visible={visible}>
-              <CardImage $image={acc.image}>
-                {acc.recommended && <RecommendedBadge>⭐ Empfehlung</RecommendedBadge>}
+              <CardImage $color={colors[i % colors.length]}>
+                {hotel.emoji}
+                <PriceBadge>{hotel.price}</PriceBadge>
+                {hotel.recommended && <RecommendBadge>Empfohlen</RecommendBadge>}
               </CardImage>
               <CardContent>
-                <CardName>{acc.name}</CardName>
-                <CardDistance>📍 {acc.distance}</CardDistance>
-                <CardDesc>{acc.description}</CardDesc>
-                <CardPrice>{acc.price} <span>/ Nacht</span></CardPrice>
-                <CardButton href={acc.url} target="_blank">Zur Website →</CardButton>
+                <CardTitle>{hotel.name}</CardTitle>
+                <CardLocation>📍 {hotel.location}</CardLocation>
+                <Features>
+                  {hotel.features?.map((f, j) => <Feature key={j}>{f}</Feature>)}
+                </Features>
+                <BookButton href="#">Buchen →</BookButton>
               </CardContent>
             </Card>
           ))}
         </Grid>
         
-        <Note $visible={visible}>
-          <NoteTitle>💡 Buchungs-Tipp</NoteTitle>
-          <NoteText>Im Hotel Schlossblick haben wir ein Kontingent reserviert. Nennt bei der Buchung einfach <strong>"{bookingCode}"</strong>!</NoteText>
-        </Note>
+        <TipBox $visible={visible}>
+          <TipText>
+            <strong>💡 Tipp:</strong> Nennt bei der Buchung "Hochzeit Sophie & Max" für Sonderkonditionen!
+          </TipText>
+        </TipBox>
       </Container>
     </Section>
   );

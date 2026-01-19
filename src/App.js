@@ -1,73 +1,94 @@
 import React from 'react';
+import GlobalStyles from './styles/GlobalStyles';
 import WeddingPage from './components/WeddingPage';
 
-function App() {
-  // Wedding Configuration
-  // Customize these values for each wedding
-  const weddingConfig = {
-    // Couple Information
-    coupleNames: 'Sophie & Max',
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║  CONTEMPORARY WEDDING THEME - Configuration                               ║
+// ║  Brutalist Style: Bold Colors, Hard Shadows, Space Grotesk                ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+const config = {
+  // ─────────────────────────────────────────────────────────────────────────
+  // COUPLE INFO
+  // ─────────────────────────────────────────────────────────────────────────
+  coupleNames: {
     name1: 'Sophie',
     name2: 'Max',
-    weddingDate: '2025-08-15T14:00:00',
-    location: 'Schloss Heidelberg',
-    
-    // Active Components (set to false to hide)
-    activeComponents: {
-      navigation: true,
-      hero: true,
-      countdown: true,
-      loveStory: true,
-      locations: true,
-      timeline: true,
-      directions: true,
-      rsvp: true,
-      dresscode: true,
-      gifts: true,
-      accommodations: true,
-      contact: true,
-      gallery: true,
-      musicWishes: true,
-      guestbook: true,
-      faq: true,
-      weddingABC: true,
-      photoUpload: true,
-      footer: true,
-    },
-    
-    // Show "Inklusive" Badges (for marketing display)
-    showBadges: {
-      hero: true,
-      navigation: true,
-      loveStory: true,
-      rsvp: true,
-      adminDashboard: true,
-      footer: true,
-    },
-    
-    // Navigation Links
-    navLinks: [
-      { label: 'Story', href: '#story' },
-      { label: 'Location', href: '#location' },
-      { label: 'Ablauf', href: '#timeline' },
-      { label: 'RSVP', href: '#rsvp' },
-      { label: 'FAQ', href: '#faq' },
-    ],
-    
-    // Admin Credentials
-    adminEmail: 'admin',
-    adminPassword: 'password',
-    
-    // Supabase Configuration (add your credentials)
-    // supabaseUrl: 'YOUR_SUPABASE_URL',
-    // supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
-    
-    // Cloudinary Configuration (add your credentials)
-    // cloudinaryCloudName: 'YOUR_CLOUD_NAME',
-    // cloudinaryUploadPreset: 'YOUR_UPLOAD_PRESET',
-  };
+  },
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // WEDDING DATE & LOCATION
+  // ─────────────────────────────────────────────────────────────────────────
+  weddingDate: '2025-08-15T14:00:00',  // ISO format for countdown
+  displayDate: '15. August 2025',       // Display format
+  location: 'Schloss Heidelberg',
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // NAVIGATION LINKS (leave empty for defaults)
+  // ─────────────────────────────────────────────────────────────────────────
+  navLinks: [
+    { label: 'Story', href: '#story' },
+    { label: 'Location', href: '#location' },
+    { label: 'Ablauf', href: '#timeline' },
+    { label: 'Galerie', href: '#gallery' },
+    { label: 'FAQ', href: '#faq' },
+  ],
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // ACTIVE COMPONENTS (set to false to hide)
+  // ─────────────────────────────────────────────────────────────────────────
+  activeComponents: {
+    hero: true,
+    countdown: true,
+    loveStory: true,
+    locations: true,
+    timeline: true,
+    directions: true,
+    gallery: true,
+    rsvp: true,
+    dresscode: true,
+    accommodations: true,
+    gifts: true,
+    musicWishes: true,
+    guestbook: true,
+    weddingABC: true,
+    photoUpload: true,
+    faq: true,
+    contact: true,
+  },
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // ADMIN CREDENTIALS
+  // ─────────────────────────────────────────────────────────────────────────
+  adminCredentials: {
+    username: 'admin',
+    password: 'wedding2025',
+  },
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // DATABASE (Supabase) - Add your credentials
+  // ─────────────────────────────────────────────────────────────────────────
+  supabase: {
+    url: '',      // Your Supabase project URL
+    anonKey: '',  // Your Supabase anon key
+  },
+  
+  // ─────────────────────────────────────────────────────────────────────────
+  // PHOTO UPLOAD (Cloudinary) - Add your credentials
+  // ─────────────────────────────────────────────────────────────────────────
+  cloudinary: {
+    cloudName: '',   // Your Cloudinary cloud name
+    uploadPreset: '', // Your upload preset
+  },
+};
 
-  return <WeddingPage config={weddingConfig} />;
+function App() {
+  return (
+    <>
+      <GlobalStyles />
+      <WeddingPage config={config} />
+    </>
+  );
 }
 
 export default App;

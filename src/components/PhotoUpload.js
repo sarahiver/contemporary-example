@@ -1,94 +1,100 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const bounce = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-`;
-
 const pulse = keyframes`
-  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
-  50% { box-shadow: 0 0 0 20px rgba(139, 92, 246, 0); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  position: relative;
+  background: linear-gradient(135deg, var(--yellow), var(--coral));
 `;
 
 const Container = styled.div`
   max-width: 700px;
   margin: 0 auto;
-  text-align: center;
 `;
 
 const Header = styled.div`
+  text-align: center;
   margin-bottom: 3rem;
 `;
 
 const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  color: var(--black);
+  text-transform: uppercase;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease;
 `;
 
 const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: rgba(26, 26, 46, 0.7);
+  color: rgba(0,0,0,0.7);
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transition: all 0.6s ease 0.1s;
 `;
 
 const DropZone = styled.div`
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  border: 3px dashed ${p => p.$dragOver ? '#8B5CF6' : 'rgba(0,0,0,0.1)'};
-  border-radius: 24px;
+  background: var(--white);
   padding: 4rem 2rem;
+  border: 4px dashed var(--black);
+  text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition-delay: 0.2s;
+  transition: all 0.6s ease 0.2s;
   
   &:hover {
-    border-color: #8B5CF6;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    background: var(--gray-100);
   }
+`;
+
+const DropZoneDragging = styled(DropZone)`
+  background: var(--gray-100);
+  border-style: solid;
+  animation: ${pulse} 0.5s ease infinite;
 `;
 
 const DropIcon = styled.div`
   font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: ${bounce} 2s ease-in-out infinite;
+  margin-bottom: 1.5rem;
 `;
 
-const DropText = styled.p`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a2e;
+const DropTitle = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 `;
 
-const DropSubtext = styled.p`
-  font-family: 'Sora', sans-serif;
+const DropText = styled.p`
   font-size: 0.9rem;
-  color: #6b7280;
-  margin: 0;
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+`;
+
+const BrowseButton = styled.span`
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--coral);
+  padding: 1rem 2rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--black);
+  }
 `;
 
 const HiddenInput = styled.input`
@@ -99,139 +105,76 @@ const PreviewGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 1rem;
-  margin: 2rem 0;
+  margin-top: 2rem;
 `;
+
+const colors = ['var(--coral)', 'var(--electric)', 'var(--yellow)', 'var(--purple)', 'var(--pink)'];
 
 const PreviewItem = styled.div`
-  position: relative;
   aspect-ratio: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-`;
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background: ${p => colors[p.$index % colors.length]};
+  border: 3px solid var(--black);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
 `;
 
 const RemoveButton = styled.button`
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 24px;
-  height: 24px;
-  background: rgba(0,0,0,0.7);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 0.9rem;
+  top: -10px;
+  right: -10px;
+  width: 28px;
+  height: 28px;
+  background: var(--coral);
+  color: var(--white);
+  border: 2px solid var(--black);
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   
-  &:hover { background: #ef4444; }
+  &:hover {
+    background: var(--black);
+  }
 `;
 
-const SubmitButton = styled.button`
-  font-family: 'Sora', sans-serif;
+const UploadButton = styled.button`
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.25rem;
   font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  padding: 1.25rem 3rem;
-  border: none;
-  border-radius: 50px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--black);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
-  animation: ${pulse} 2s ease-in-out infinite;
+  transition: all 0.2s ease;
   
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    background: var(--purple);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
   }
   
   &:disabled {
-    background: #9ca3af;
+    opacity: 0.5;
     cursor: not-allowed;
-    animation: none;
+    transform: none;
+    box-shadow: var(--shadow-md);
   }
 `;
 
-const ProgressBar = styled.div`
-  width: 100%;
-  height: 6px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 3px;
-  margin: 1.5rem 0;
-  overflow: hidden;
-`;
-
-const ProgressFill = styled.div`
-  height: 100%;
-  background: linear-gradient(90deg, #8B5CF6, #EC4899);
-  border-radius: 3px;
-  width: ${p => p.$progress}%;
-  transition: width 0.3s ease;
-`;
-
-const Success = styled.div`
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 3rem;
-  text-align: center;
-`;
-
-const SuccessIcon = styled.div`
-  font-size: 4rem;
-  margin-bottom: 1rem;
-`;
-
-const SuccessTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-`;
-
-const SuccessText = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-`;
-
-const ResetButton = styled.button`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #8B5CF6;
-  background: none;
-  border: 2px solid #8B5CF6;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: #8B5CF6;
-    color: #fff;
-  }
-`;
-
-function PhotoUpload({ title = 'Upload your pics', subtitle = 'Teilt eure schönsten Schnappschüsse mit uns!', maxFiles = 20, onUpload }) {
+function PhotoUpload({ onUpload }) {
   const [visible, setVisible] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [files, setFiles] = useState([]);
-  const [previews, setPreviews] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
   const sectionRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -244,109 +187,75 @@ function PhotoUpload({ title = 'Upload your pics', subtitle = 'Teilt eure schön
     return () => observer.disconnect();
   }, []);
 
-  const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
-  const handleDragLeave = () => setDragOver(false);
-  
   const handleDrop = (e) => {
     e.preventDefault();
-    setDragOver(false);
-    addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
+    setDragging(false);
+    const newFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    setFiles(prev => [...prev, ...newFiles]);
   };
 
-  const handleFileSelect = (e) => addFiles(Array.from(e.target.files));
-
-  const addFiles = (newFiles) => {
-    const remaining = maxFiles - files.length;
-    const toAdd = newFiles.slice(0, remaining);
-    setFiles(prev => [...prev, ...toAdd]);
-    
-    toAdd.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => setPreviews(prev => [...prev, { file, preview: e.target.result }]);
-      reader.readAsDataURL(file);
-    });
+  const handleFileSelect = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setFiles(prev => [...prev, ...newFiles]);
   };
 
   const removeFile = (index) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
-    setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
+  const handleUpload = async () => {
     setUploading(true);
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(r => setTimeout(r, 150));
-      setProgress(i);
-    }
     if (onUpload) await onUpload(files);
-    setUploading(false);
-    setSubmitted(true);
+    setTimeout(() => {
+      setUploading(false);
+      setFiles([]);
+    }, 2000);
   };
 
-  const handleReset = () => {
-    setFiles([]);
-    setPreviews([]);
-    setProgress(0);
-    setSubmitted(false);
-  };
-
-  if (submitted) {
-    return (
-      <Section ref={sectionRef} id="photos">
-        <Container>
-          <Success>
-            <SuccessIcon>🎉</SuccessIcon>
-            <SuccessTitle>Awesome!</SuccessTitle>
-            <SuccessText>{files.length} {files.length === 1 ? 'Foto wurde' : 'Fotos wurden'} hochgeladen.</SuccessText>
-            <ResetButton onClick={handleReset}>Weitere hochladen</ResetButton>
-          </Success>
-        </Container>
-      </Section>
-    );
-  }
+  const DropZoneComponent = dragging ? DropZoneDragging : DropZone;
 
   return (
     <Section ref={sectionRef} id="photos">
       <Container>
         <Header>
-          <Title $visible={visible}>{title} 📸</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Title $visible={visible}>📸 Foto Upload</Title>
+          <Subtitle $visible={visible}>Teile deine schönsten Momente mit uns</Subtitle>
         </Header>
         
-        <DropZone
+        <DropZoneComponent 
           $visible={visible}
-          $dragOver={dragOver}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
         >
           <DropIcon>📷</DropIcon>
-          <DropText>Fotos hier ablegen</DropText>
-          <DropSubtext>oder klicken zum Auswählen · Max. {maxFiles} Fotos</DropSubtext>
-          <HiddenInput ref={inputRef} type="file" accept="image/*" multiple onChange={handleFileSelect} />
-        </DropZone>
+          <DropTitle>Fotos hochladen</DropTitle>
+          <DropText>Drag & Drop oder klicken zum Auswählen</DropText>
+          <BrowseButton>Dateien auswählen</BrowseButton>
+          <HiddenInput 
+            ref={inputRef}
+            type="file" 
+            multiple 
+            accept="image/*"
+            onChange={handleFileSelect}
+          />
+        </DropZoneComponent>
         
-        {previews.length > 0 && (
+        {files.length > 0 && (
           <>
             <PreviewGrid>
-              {previews.map((item, i) => (
-                <PreviewItem key={i}>
-                  <PreviewImage src={item.preview} alt={`Preview ${i + 1}`} />
-                  {!uploading && <RemoveButton onClick={() => removeFile(i)}>×</RemoveButton>}
+              {files.map((file, i) => (
+                <PreviewItem key={i} $index={i}>
+                  📷
+                  <RemoveButton onClick={() => removeFile(i)}>×</RemoveButton>
                 </PreviewItem>
               ))}
             </PreviewGrid>
             
-            {uploading && (
-              <ProgressBar>
-                <ProgressFill $progress={progress} />
-              </ProgressBar>
-            )}
-            
-            <SubmitButton onClick={handleSubmit} disabled={uploading}>
-              {uploading ? `Uploading... ${progress}%` : `${files.length} Fotos hochladen ✨`}
-            </SubmitButton>
+            <UploadButton onClick={handleUpload} disabled={uploading}>
+              {uploading ? 'Uploading...' : `${files.length} Fotos hochladen →`}
+            </UploadButton>
           </>
         )}
       </Container>

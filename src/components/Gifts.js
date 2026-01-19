@@ -1,18 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-`;
+import styled from 'styled-components';
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: #fff;
+  background: var(--white);
 `;
 
 const Container = styled.div`
-  max-width: 1100px;
+  max-width: 900px;
   margin: 0 auto;
 `;
 
@@ -21,299 +16,191 @@ const Header = styled.div`
   margin-bottom: 4rem;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+const Eyebrow = styled.div`
+  display: inline-block;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--coral);
+  margin-bottom: 1.5rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transition: all 0.6s ease;
+`;
+
+const Title = styled.h2`
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 1rem;
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.6s ease 0.1s;
 `;
 
 const Subtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 1.1rem;
-  color: #6b7280;
-  max-width: 600px;
-  margin: 0 auto;
+  font-size: 1rem;
+  color: var(--gray-600);
   opacity: ${p => p.$visible ? 1 : 0};
-  transform: translateY(${p => p.$visible ? 0 : '20px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.1s;
+  transition: all 0.6s ease 0.2s;
 `;
 
 const MainCard = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  border-radius: 32px;
+  background: linear-gradient(135deg, var(--coral), var(--purple));
   padding: 3rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-xl);
   margin-bottom: 3rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: 0.2s;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-    pointer-events: none;
-  }
+  transition: all 0.6s ease 0.3s;
 `;
 
-const MainIcon = styled.div`
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  animation: ${float} 3s ease-in-out infinite;
-`;
-
-const MainTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.75rem;
+const MainCardTitle = styled.h3`
+  font-size: 2rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--white);
+  text-transform: uppercase;
   margin-bottom: 1rem;
 `;
 
-const MainText = styled.p`
-  font-family: 'Sora', sans-serif;
+const MainCardText = styled.p`
   font-size: 1rem;
   color: rgba(255,255,255,0.9);
-  max-width: 500px;
-  margin: 0 auto 2rem;
-  line-height: 1.7;
-`;
-
-const CopyBox = styled.div`
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 1.5rem 2rem;
-  display: inline-block;
-  max-width: 100%;
-`;
-
-const CopyLabel = styled.div`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 0.5rem;
-`;
-
-const CopyValue = styled.div`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
-  word-break: break-all;
-`;
-
-const WishlistTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  text-align: center;
   margin-bottom: 2rem;
-  opacity: ${p => p.$visible ? 1 : 0};
-  transition: all 0.8s ease;
-  transition-delay: 0.3s;
+  line-height: 1.6;
 `;
 
-const Grid = styled.div`
+const IbanBox = styled.div`
+  background: rgba(0,0,0,0.2);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+`;
+
+const IbanText = styled.div`
+  font-family: monospace;
+  font-size: 1.1rem;
+  color: var(--white);
+  letter-spacing: 0.05em;
+`;
+
+const CopyButton = styled.button`
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--black);
+  background: var(--yellow);
+  padding: 0.75rem 1.5rem;
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-md);
+  }
+`;
+
+const GiftGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
 `;
 
+const colors = ['var(--coral)', 'var(--electric)', 'var(--yellow)', 'var(--purple)'];
+
 const GiftCard = styled.div`
-  background: #f9fafb;
-  border: 2px solid ${p => p.$reserved ? '#e5e7eb' : 'transparent'};
-  border-radius: 20px;
-  padding: 1.5rem;
-  position: relative;
+  background: var(--white);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
   opacity: ${p => p.$visible ? 1 : 0};
   transform: translateY(${p => p.$visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-  transition-delay: ${p => 0.4 + p.$index * 0.1}s;
+  transition: all 0.6s ease ${p => 0.4 + p.$index * 0.1}s;
   
-  ${p => !p.$reserved && `
-    &:hover {
-      border-color: #8B5CF6;
-      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
-      transform: translateY(-5px);
-    }
-  `}
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+  }
+`;
+
+const GiftImage = styled.div`
+  height: 150px;
+  background: ${p => p.$color};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
 `;
 
 const ReservedBadge = styled.div`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: #10b981;
-  color: #fff;
-  font-family: 'Sora', sans-serif;
+  top: 0.75rem;
+  right: 0.75rem;
   font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.35rem 0.75rem;
-  border-radius: 50px;
+  color: var(--white);
+  background: var(--electric);
+  padding: 0.3rem 0.6rem;
+  border: 2px solid var(--black);
 `;
 
-const GiftImage = styled.div`
-  width: 100%;
-  height: 140px;
-  background: ${p => p.$image ? `url(${p.$image}) center/cover` : 'linear-gradient(135deg, #e0e7ff, #fce7f3)'};
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  opacity: ${p => p.$reserved ? 0.5 : 1};
+const GiftContent = styled.div`
+  padding: 1.25rem;
 `;
 
 const GiftName = styled.h4`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: ${p => p.$reserved ? '#9ca3af' : '#1a1a2e'};
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 `;
 
-const GiftPrice = styled.div`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  background: ${p => p.$reserved ? '#9ca3af' : 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+const GiftPrice = styled.p`
+  font-size: 0.85rem;
+  color: var(--gray-600);
   margin-bottom: 1rem;
 `;
 
 const ReserveButton = styled.button`
   width: 100%;
-  padding: 0.75rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: ${p => p.$reserved ? '#9ca3af' : '#fff'};
-  background: ${p => p.$reserved ? '#e5e7eb' : 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
-  border: none;
-  border-radius: 10px;
-  cursor: ${p => p.$reserved ? 'not-allowed' : 'pointer'};
-  transition: all 0.3s ease;
-  
-  ${p => !p.$reserved && `
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
-    }
-  `}
-`;
-
-const Modal = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  opacity: ${p => p.$open ? 1 : 0};
-  visibility: ${p => p.$open ? 'visible' : 'hidden'};
-  transition: all 0.3s ease;
-  padding: 2rem;
-`;
-
-const ModalContent = styled.div`
-  background: #fff;
-  padding: 2.5rem;
-  border-radius: 24px;
-  max-width: 400px;
-  width: 100%;
-`;
-
-const ModalTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.5rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 0.5rem;
-`;
-
-const ModalSubtitle = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 1.5rem;
-`;
-
-const ModalInput = styled.input`
-  width: 100%;
-  padding: 1rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  margin-bottom: 1rem;
+  color: ${p => p.$reserved ? 'var(--gray-500)' : 'var(--white)'};
+  background: ${p => p.$reserved ? 'var(--gray-200)' : 'var(--coral)'};
+  padding: 0.75rem;
+  border: 2px solid var(--black);
+  text-transform: uppercase;
+  cursor: ${p => p.$reserved ? 'not-allowed' : 'pointer'};
+  transition: all 0.2s ease;
   
-  &:focus {
-    outline: none;
-    border-color: #8B5CF6;
+  &:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const ModalButtons = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-const ModalButton = styled.button`
-  flex: 1;
-  padding: 1rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  ${p => p.$primary ? `
-    color: #fff;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3); }
-  ` : `
-    color: #6b7280;
-    background: #f3f4f6;
-    &:hover { background: #e5e7eb; }
-  `}
-`;
-
-function Gifts({ title = 'No registry, but...', subtitle = 'Das größte Geschenk ist eure Anwesenheit! Wer uns dennoch etwas schenken möchte:', gifts = [], onReserve }) {
+function Gifts({ gifts = [] }) {
   const [visible, setVisible] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedGift, setSelectedGift] = useState(null);
-  const [reserverName, setReserverName] = useState('');
+  const [copied, setCopied] = useState(false);
   const sectionRef = useRef(null);
 
   const defaultGifts = [
-    { id: 1, name: 'KitchenAid Küchenmaschine', price: '599€', image: null, reserved: false },
-    { id: 2, name: 'Dyson Staubsauger V15', price: '649€', image: null, reserved: true, reservedBy: 'Familie Müller' },
-    { id: 3, name: 'Nespresso Kaffeemaschine', price: '299€', image: null, reserved: false },
-    { id: 4, name: 'Philips Hue Starter Set', price: '149€', image: null, reserved: false },
-    { id: 5, name: 'Weber Gasgrill Spirit', price: '549€', image: null, reserved: true, reservedBy: 'Thomas' },
-    { id: 6, name: 'Bettwäsche-Set Premium', price: '189€', image: null, reserved: false },
+    { name: 'KitchenAid', price: '€599', emoji: '🍳', reserved: false },
+    { name: 'Dyson V15', price: '€699', emoji: '🧹', reserved: true },
+    { name: 'Nespresso Vertuo', price: '€199', emoji: '☕', reserved: false },
+    { name: 'Le Creuset Set', price: '€399', emoji: '🍲', reserved: false },
   ];
 
   const items = gifts.length > 0 ? gifts : defaultGifts;
@@ -327,73 +214,52 @@ function Gifts({ title = 'No registry, but...', subtitle = 'Das größte Geschen
     return () => observer.disconnect();
   }, []);
 
-  const handleReserve = (gift) => {
-    setSelectedGift(gift);
-    setModalOpen(true);
-  };
-
-  const handleConfirm = async () => {
-    if (onReserve) await onReserve({ gift: selectedGift, reserverName });
-    setModalOpen(false);
-    setReserverName('');
+  const handleCopy = () => {
+    navigator.clipboard.writeText('DE89 3704 0044 0532 0130 00');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <Section ref={sectionRef} id="gifts">
       <Container>
         <Header>
-          <Title $visible={visible}>{title}</Title>
-          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+          <Eyebrow $visible={visible}>🎁 Geschenke</Eyebrow>
+          <Title $visible={visible}>Gift Registry</Title>
+          <Subtitle $visible={visible}>Euer Beitrag zu unserem nächsten Abenteuer</Subtitle>
         </Header>
         
         <MainCard $visible={visible}>
-          <MainIcon>✈️</MainIcon>
-          <MainTitle>Honeymoon Fund</MainTitle>
-          <MainText>
-            Anstatt einer klassischen Hochzeitsliste freuen wir uns über einen Beitrag zu unserer Traumreise nach Bali! 🌴
-          </MainText>
-          <CopyBox>
-            <CopyLabel>IBAN</CopyLabel>
-            <CopyValue>DE89 3704 0044 0532 0130 00</CopyValue>
-          </CopyBox>
+          <MainCardTitle>🌴 Honeymoon Fund</MainCardTitle>
+          <MainCardText>
+            Das schönste Geschenk ist eure Anwesenheit! Wer uns trotzdem etwas schenken möchte: 
+            Wir träumen von einem Roadtrip durch Neuseeland.
+          </MainCardText>
+          <IbanBox>
+            <IbanText>DE89 3704 0044 0532 0130 00</IbanText>
+            <CopyButton onClick={handleCopy}>
+              {copied ? '✓ Kopiert!' : 'Kopieren'}
+            </CopyButton>
+          </IbanBox>
         </MainCard>
         
-        <WishlistTitle $visible={visible}>Oder von unserer Wunschliste 🎁</WishlistTitle>
-        
-        <Grid>
+        <GiftGrid>
           {items.map((gift, i) => (
-            <GiftCard key={gift.id} $index={i} $visible={visible} $reserved={gift.reserved}>
-              {gift.reserved && <ReservedBadge>Reserviert</ReservedBadge>}
-              <GiftImage $image={gift.image} $reserved={gift.reserved} />
-              <GiftName $reserved={gift.reserved}>{gift.name}</GiftName>
-              <GiftPrice $reserved={gift.reserved}>{gift.price}</GiftPrice>
-              <ReserveButton 
-                $reserved={gift.reserved}
-                onClick={() => !gift.reserved && handleReserve(gift)}
-                disabled={gift.reserved}
-              >
-                {gift.reserved ? `von ${gift.reservedBy}` : 'Reservieren'}
-              </ReserveButton>
+            <GiftCard key={i} $index={i} $visible={visible}>
+              <GiftImage $color={colors[i % colors.length]}>
+                {gift.emoji}
+                {gift.reserved && <ReservedBadge>Reserviert</ReservedBadge>}
+              </GiftImage>
+              <GiftContent>
+                <GiftName>{gift.name}</GiftName>
+                <GiftPrice>{gift.price}</GiftPrice>
+                <ReserveButton $reserved={gift.reserved} disabled={gift.reserved}>
+                  {gift.reserved ? 'Bereits reserviert' : 'Reservieren'}
+                </ReserveButton>
+              </GiftContent>
             </GiftCard>
           ))}
-        </Grid>
-        
-        <Modal $open={modalOpen} onClick={() => setModalOpen(false)}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            <ModalTitle>Geschenk reservieren</ModalTitle>
-            <ModalSubtitle>{selectedGift?.name} – {selectedGift?.price}</ModalSubtitle>
-            <ModalInput 
-              type="text"
-              value={reserverName}
-              onChange={e => setReserverName(e.target.value)}
-              placeholder="Dein Name"
-            />
-            <ModalButtons>
-              <ModalButton onClick={() => setModalOpen(false)}>Abbrechen</ModalButton>
-              <ModalButton $primary onClick={handleConfirm}>Reservieren</ModalButton>
-            </ModalButtons>
-          </ModalContent>
-        </Modal>
+        </GiftGrid>
       </Container>
     </Section>
   );

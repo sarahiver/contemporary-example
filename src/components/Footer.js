@@ -1,292 +1,320 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const pulse = keyframes`
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: scale(1); box-shadow: var(--shadow-lg); }
+  50% { transform: scale(1.03); box-shadow: 12px 12px 0 var(--black); }
 `;
 
-const FooterSection = styled.footer`
-  background: #fff;
-  padding: 6rem 2rem 2rem;
+const Section = styled.footer`
+  padding: 8rem 2rem 4rem;
+  background: var(--black);
   position: relative;
-`;
-
-const IncludedBadge = styled.div`
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  color: #fff;
-  font-family: 'Sora', sans-serif;
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.4rem 0.8rem;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  overflow: hidden;
   
-  &::before { content: '✓'; }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(255,107,107,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
-`;
-
-const MainContent = styled.div`
   text-align: center;
-  margin-bottom: 4rem;
+  position: relative;
+  z-index: 1;
 `;
 
-const Title = styled.h2`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(3rem, 8vw, 6rem);
+const BigHeadline = styled.h2`
+  font-size: clamp(3rem, 10vw, 6rem);
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 2rem;
+  color: var(--white);
+  text-transform: uppercase;
   line-height: 1;
+  margin-bottom: 2rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
+  transition: all 0.8s ease;
+`;
+
+const Subtitle = styled.p`
+  font-size: 1.1rem;
+  color: var(--gray-400);
+  margin-bottom: 3rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transition: all 0.6s ease 0.2s;
 `;
 
 const CTAButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  padding: 1.25rem 2.5rem;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  display: inline-block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--black);
+  background: var(--coral);
+  padding: 1.5rem 4rem;
+  border: 4px solid var(--black);
+  box-shadow: var(--shadow-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   animation: ${pulse} 2s ease-in-out infinite;
+  transition: all 0.2s ease;
+  opacity: ${p => p.$visible ? 1 : 0};
   
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+    background: var(--yellow);
+    animation: none;
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0 var(--black);
   }
 `;
 
 const Divider = styled.div`
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+  width: 100%;
+  height: 3px;
+  background: var(--gray-800);
+  margin: 5rem 0 3rem;
+`;
+
+const CoupleNames = styled.div`
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--coral), var(--electric), var(--yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+`;
+
+const FooterLinks = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
   margin-bottom: 2rem;
 `;
 
-const Bottom = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+const FooterLink = styled.a`
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.2s ease;
   
-  @media (max-width: 768px) {
-    flex-direction: column;
-    text-align: center;
+  &:hover {
+    color: var(--coral);
   }
 `;
 
-const Names = styled.div`
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+const AdminLink = styled.button`
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-top: 2rem;
+  transition: color 0.2s ease;
   
-  .ampersand {
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  &:hover {
+    color: var(--coral);
   }
 `;
 
 const Copyright = styled.p`
-  font-family: 'Sora', sans-serif;
-  font-size: 0.85rem;
-  color: #9ca3af;
-`;
-
-const AdminButton = styled.button`
-  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  color: #9ca3af;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  
-  &:hover { color: #6b7280; }
+  color: var(--gray-600);
+  margin-top: 2rem;
 `;
 
-const Modal = styled.div`
+const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  opacity: ${p => p.$open ? 1 : 0};
-  visibility: ${p => p.$open ? 'visible' : 'hidden'};
-  transition: all 0.3s ease;
+  z-index: 9999;
   padding: 2rem;
 `;
 
-const ModalContent = styled.div`
-  background: #fff;
+const Modal = styled.div`
+  background: var(--white);
   padding: 2.5rem;
-  border-radius: 24px;
+  border: 4px solid var(--black);
+  box-shadow: var(--shadow-xl);
   max-width: 400px;
   width: 100%;
-  position: relative;
 `;
 
 const ModalTitle = styled.h3`
-  font-family: 'Space Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--black);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
   text-align: center;
-  margin-bottom: 2rem;
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 `;
 
 const Label = styled.label`
   display: block;
-  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: var(--gray-600);
   margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 1rem;
-  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: #1a1a2e;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  color: var(--black);
+  background: var(--gray-100);
+  border: 3px solid var(--black);
   
   &:focus {
     outline: none;
-    border-color: #8B5CF6;
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
   }
 `;
 
-const SubmitButton = styled.button`
-  width: 100%;
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+`;
+
+const ModalButton = styled.button`
+  flex: 1;
   padding: 1rem;
-  font-family: 'Sora', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-  border: none;
-  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 3px solid var(--black);
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+  background: ${p => p.$primary ? 'var(--coral)' : 'var(--white)'};
+  color: ${p => p.$primary ? 'var(--white)' : 'var(--black)'};
+  box-shadow: ${p => p.$primary ? 'var(--shadow-sm)' : 'none'};
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+    transform: ${p => p.$primary ? 'translate(-2px, -2px)' : 'none'};
+    box-shadow: ${p => p.$primary ? 'var(--shadow-md)' : 'none'};
+    background: ${p => p.$primary ? 'var(--coral)' : 'var(--gray-100)'};
   }
 `;
 
-const Error = styled.p`
-  font-family: 'Sora', sans-serif;
+const ErrorMessage = styled.p`
+  color: var(--coral);
   font-size: 0.85rem;
-  color: #ef4444;
   text-align: center;
   margin-top: 1rem;
 `;
 
-function Footer({ coupleNames = 'Sophie & Max', onLogin, adminEmail = 'admin', adminPassword = 'password', showBadge = false }) {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+function Footer({ coupleNames = 'Sophie & Max', onAdminLogin }) {
+  const [visible, setVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const sectionRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError('');
-    
-    if (email === adminEmail && password === adminPassword) {
-      if (onLogin) onLogin(email, password);
-      setModalOpen(false);
-      setEmail('');
-      setPassword('');
+    if (credentials.username === 'admin' && credentials.password === 'password') {
+      if (onAdminLogin) onAdminLogin();
+      setShowModal(false);
+      setCredentials({ username: '', password: '' });
+      setError('');
     } else {
       setError('Ungültige Anmeldedaten');
     }
   };
 
-  const names = coupleNames.split('&');
-  const year = new Date().getFullYear();
-
   return (
-    <FooterSection id="footer">
-      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
+    <>
+      <Section ref={sectionRef}>
+        <Container>
+          <BigHeadline $visible={visible}>See you<br />soon!</BigHeadline>
+          <Subtitle $visible={visible}>Wir können es kaum erwarten, mit euch zu feiern</Subtitle>
+          <CTAButton href="#rsvp" $visible={visible}>Jetzt zusagen →</CTAButton>
+          
+          <Divider />
+          
+          <CoupleNames>{coupleNames}</CoupleNames>
+          
+          <FooterLinks>
+            <FooterLink href="#story">Story</FooterLink>
+            <FooterLink href="#location">Location</FooterLink>
+            <FooterLink href="#timeline">Ablauf</FooterLink>
+            <FooterLink href="#faq">FAQ</FooterLink>
+          </FooterLinks>
+          
+          <AdminLink onClick={() => setShowModal(true)}>
+            🔐 Admin Login
+          </AdminLink>
+          
+          <Copyright>
+            © {new Date().getFullYear()} {coupleNames} • Made with ♥
+          </Copyright>
+        </Container>
+      </Section>
       
-      <Container>
-        <MainContent>
-          <Title>See you soon!</Title>
-          <CTAButton href="#rsvp">
-            RSVP Now
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </CTAButton>
-        </MainContent>
-        
-        <Divider />
-        
-        <Bottom>
-          <Names>
-            {names[0]?.trim()} <span className="ampersand">&</span> {names[1]?.trim()}
-          </Names>
-          <Copyright>© {year} · Made with 💕</Copyright>
-          <AdminButton onClick={() => setModalOpen(true)}>Admin</AdminButton>
-        </Bottom>
-      </Container>
-      
-      <Modal $open={modalOpen} onClick={() => setModalOpen(false)}>
-        <ModalContent onClick={e => e.stopPropagation()}>
-          <ModalTitle>Admin Login</ModalTitle>
-          <form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label>E-Mail</Label>
-              <Input type="text" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@email.de" required />
-            </FormGroup>
-            <FormGroup>
-              <Label>Passwort</Label>
-              <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
-            </FormGroup>
-            <SubmitButton type="submit">Anmelden</SubmitButton>
-            {error && <Error>{error}</Error>}
-          </form>
-        </ModalContent>
-      </Modal>
-    </FooterSection>
+      {showModal && (
+        <ModalOverlay onClick={() => setShowModal(false)}>
+          <Modal onClick={e => e.stopPropagation()}>
+            <ModalTitle>🔐 Admin Login</ModalTitle>
+            <form onSubmit={handleLogin}>
+              <FormGroup>
+                <Label>Benutzername</Label>
+                <Input 
+                  type="text" 
+                  value={credentials.username}
+                  onChange={e => setCredentials({ ...credentials, username: e.target.value })}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Passwort</Label>
+                <Input 
+                  type="password" 
+                  value={credentials.password}
+                  onChange={e => setCredentials({ ...credentials, password: e.target.value })}
+                  required
+                />
+              </FormGroup>
+              {error && <ErrorMessage>{error}</ErrorMessage>}
+              <ModalButtons>
+                <ModalButton type="button" onClick={() => setShowModal(false)}>Abbrechen</ModalButton>
+                <ModalButton type="submit" $primary>Login</ModalButton>
+              </ModalButtons>
+            </form>
+          </Modal>
+        </ModalOverlay>
+      )}
+    </>
   );
 }
 
