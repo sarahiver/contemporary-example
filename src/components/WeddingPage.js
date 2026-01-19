@@ -32,7 +32,6 @@ function WeddingPage({ config }) {
     location = 'Schloss Heidelberg',
     navLinks = [],
     activeComponents = {},
-    adminCredentials = { username: 'admin', password: 'wedding2025' },
   } = config || {};
 
   const handleRSVPSubmit = async (data) => {
