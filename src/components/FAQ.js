@@ -1,19 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const popIn = keyframes`
-  from { transform: scale(0.8) translateY(20px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
-`;
-
-const typing = keyframes`
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-`;
+import styled from 'styled-components';
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: var(--gray-100);
+  background: #fafafa;
 `;
 
 const Container = styled.div`
@@ -23,195 +13,152 @@ const Container = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-`;
-
-const Eyebrow = styled.div`
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
 `;
 
 const Title = styled.h2`
-  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  color: var(--black);
-  letter-spacing: -0.03em;
+  color: #1a1a2e;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
-// Chat interface container
-const ChatContainer = styled.div`
-  background: var(--white);
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-`;
-
-// Question selector (tabs)
-const QuestionTabs = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  padding: 1.5rem;
-  overflow-x: auto;
-  background: var(--gray-100);
-  border-bottom: 1px solid var(--gray-200);
-  scrollbar-width: none;
-  
-  &::-webkit-scrollbar { display: none; }
-`;
-
-const QuestionTab = styled.button`
-  flex-shrink: 0;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: ${p => p.active ? 'var(--white)' : 'var(--gray-600)'};
-  background: ${p => p.active ? 'var(--coral)' : 'var(--white)'};
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  
-  &:hover {
-    ${p => !p.active && 'background: var(--gray-200);'}
-  }
-`;
-
-// Chat window
-const ChatWindow = styled.div`
-  padding: 2rem;
-  min-height: 400px;
+const QuestionList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-`;
-
-// Chat bubbles
-const ChatBubble = styled.div`
-  display: flex;
   gap: 1rem;
-  align-items: flex-start;
-  animation: ${popIn} 0.4s ease;
-  
-  ${p => p.isAnswer ? `
-    flex-direction: row-reverse;
-    text-align: right;
-  ` : ''}
 `;
 
-const Avatar = styled.div`
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: ${p => p.isAnswer ? 'var(--coral)' : 'var(--electric)'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  flex-shrink: 0;
+const QuestionItem = styled.div`
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  border: 2px solid ${p => p.$open ? '#8B5CF6' : 'transparent'};
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.5s ease;
+  transition-delay: ${p => 0.1 + p.$index * 0.05}s;
 `;
 
-const BubbleContent = styled.div`
-  max-width: 80%;
-`;
-
-const BubbleText = styled.div`
-  padding: 1.25rem 1.5rem;
-  background: ${p => p.isAnswer ? 'var(--coral)' : 'var(--gray-100)'};
-  color: ${p => p.isAnswer ? 'var(--white)' : 'var(--black)'};
-  border-radius: ${p => p.isAnswer ? '20px 20px 5px 20px' : '20px 20px 20px 5px'};
-  font-size: 1rem;
-  line-height: 1.6;
-`;
-
-const BubbleTime = styled.div`
-  font-size: 0.7rem;
-  color: var(--gray-600);
-  margin-top: 0.5rem;
-  padding: 0 0.5rem;
-`;
-
-// Typing indicator
-const TypingIndicator = styled.div`
-  display: flex;
-  gap: 0.3rem;
-  padding: 1rem 1.5rem;
-  background: var(--gray-100);
-  border-radius: 20px;
-  width: fit-content;
-  
-  span {
-    width: 8px;
-    height: 8px;
-    background: var(--gray-400);
-    border-radius: 50%;
-    animation: ${typing} 1.4s infinite ease-in-out;
-    
-    &:nth-child(1) { animation-delay: 0s; }
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.4s; }
-  }
-`;
-
-// Contact section at bottom
-const ContactSection = styled.div`
-  padding: 1.5rem 2rem;
-  background: var(--black);
+const QuestionHeader = styled.button`
+  width: 100%;
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+`;
+
+const QuestionText = styled.span`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  padding-right: 1rem;
+`;
+
+const ToggleIcon = styled.div`
+  width: 36px;
+  height: 36px;
+  background: ${p => p.$open ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : '#f3f4f6'};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    stroke: ${p => p.$open ? '#fff' : '#6b7280'};
+    transition: transform 0.3s ease;
+    transform: rotate(${p => p.$open ? '180deg' : '0'});
+  }
+`;
+
+const AnswerWrapper = styled.div`
+  max-height: ${p => p.$open ? '500px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+`;
+
+const Answer = styled.div`
+  padding: 0 1.5rem 1.5rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.7;
+`;
+
+const ContactBox = styled.div`
+  margin-top: 3rem;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  border-radius: 24px;
+  padding: 2.5rem;
+  text-align: center;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
+  transition-delay: 0.5s;
+`;
+
+const ContactTitle = styled.h4`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
 `;
 
 const ContactText = styled.p`
+  font-family: 'Sora', sans-serif;
   font-size: 0.9rem;
-  color: var(--gray-300);
-  
-  strong {
-    color: var(--white);
-  }
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 1.5rem;
 `;
 
-const ContactBtn = styled.a`
-  padding: 0.75rem 1.5rem;
-  font-size: 0.85rem;
+const ContactButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--black);
-  background: var(--yellow);
-  border-radius: 25px;
-  text-decoration: none;
+  color: #8B5CF6;
+  background: #fff;
+  padding: 0.875rem 1.75rem;
+  border-radius: 50px;
   transition: all 0.3s ease;
   
   &:hover {
-    background: var(--white);
     transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   }
 `;
 
-function FAQ({
-  faqs = [
-    { question: 'Dresscode?', answer: 'Smart Casual mit einem Twist! Denkt an bunte Farben und bequeme Schuhe zum Tanzen. Kein Weiß bitte – das ist für die Braut reserviert! 👗', avatar: '👔' },
-    { question: 'Begleitung?', answer: 'Schaut auf eure Einladung – dort steht, wer alles eingeladen ist. Bei Fragen meldet euch gerne direkt bei uns! 💌', avatar: '💑' },
-    { question: 'Kinder?', answer: 'We love kids! Es gibt eine Kinderbetreuung und ein spezielles Kindermenü. Bringt eure Kleinen gerne mit! 👶', avatar: '👶' },
-    { question: 'Geschenke?', answer: 'Eure Anwesenheit ist das größte Geschenk! Wer dennoch etwas beitragen möchte, freuen wir uns über einen Beitrag zu unserer Hochzeitsreise. 🎁', avatar: '🎁' },
-    { question: 'Fotos?', answer: 'Unplugged Ceremony bitte! Bei der Feier dürft ihr dann alles knipsen und teilen. #SophieUndMax 📸', avatar: '📸' },
-    { question: 'Parken?', answer: 'Kostenlose Parkplätze direkt an der Location. Für die Party-People: Taxi oder Uber empfohlen! 🚗', avatar: '🚗' },
-  ],
-  contactEmail = 'hello@sophieundmax.de',
-}) {
+function FAQ({ title = "We've got answers", faqs = [], contactEmail = 'hochzeit@email.de' }) {
   const [visible, setVisible] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [openIndex, setOpenIndex] = useState(null);
   const sectionRef = useRef(null);
+
+  const defaultFaqs = [
+    { question: 'Gibt es einen Dresscode?', answer: 'Elegante Abendgarderobe! Die Herren gerne im Anzug, die Damen im Cocktail- oder Abendkleid. Bitte vermeidet Weiß – das ist der Braut vorbehalten. 👗' },
+    { question: 'Kann ich jemanden mitbringen?', answer: 'Bitte habt Verständnis, dass wir nur die auf der Einladung genannten Personen empfangen können. Bei Fragen meldet euch gerne bei uns!' },
+    { question: 'Sind Kinder willkommen?', answer: 'Wir haben uns für eine Feier nur für Erwachsene entschieden, damit alle entspannt feiern können. Wir hoffen auf euer Verständnis. 💕' },
+    { question: 'Gibt es Parkplätze vor Ort?', answer: 'Ja! Kostenlose Parkplätze sind direkt an der Location vorhanden. Folgt einfach der Beschilderung. 🚗' },
+    { question: 'Bis wann muss ich zusagen?', answer: 'Bitte gebt uns bis zum 15. Juni Bescheid, ob ihr dabei seid. Das hilft uns sehr bei der Planung! ⏰' },
+    { question: 'Darf ich fotografieren?', answer: 'Während der Zeremonie bitten wir euch, keine Fotos zu machen – unser Fotograf hält alles fest. Bei der Feier dürft ihr natürlich knipsen! 📸' },
+  ];
+
+  const items = faqs.length > 0 ? faqs : defaultFaqs;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -222,81 +169,43 @@ function FAQ({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    setShowAnswer(false);
-    setIsTyping(true);
-    
-    const typingTimer = setTimeout(() => {
-      setIsTyping(false);
-      setShowAnswer(true);
-    }, 1000);
-    
-    return () => clearTimeout(typingTimer);
-  }, [activeIndex]);
-
-  const currentFaq = faqs[activeIndex];
-
   return (
     <Section ref={sectionRef} id="faq">
       <Container>
-        <Header visible={visible}>
-          <Eyebrow>Got Questions?</Eyebrow>
-          <Title>We've got answers</Title>
+        <Header>
+          <Title $visible={visible}>{title}</Title>
         </Header>
         
-        <ChatContainer>
-          <QuestionTabs>
-            {faqs.map((faq, i) => (
-              <QuestionTab 
-                key={i}
-                active={activeIndex === i}
-                onClick={() => setActiveIndex(i)}
-              >
-                {faq.question}
-              </QuestionTab>
-            ))}
-          </QuestionTabs>
-          
-          <ChatWindow>
-            {/* Question bubble */}
-            <ChatBubble>
-              <Avatar>🙋</Avatar>
-              <BubbleContent>
-                <BubbleText>{currentFaq.question}</BubbleText>
-                <BubbleTime>You, just now</BubbleTime>
-              </BubbleContent>
-            </ChatBubble>
-            
-            {/* Typing indicator or answer */}
-            {isTyping ? (
-              <ChatBubble isAnswer>
-                <Avatar isAnswer>{currentFaq.avatar}</Avatar>
-                <BubbleContent>
-                  <TypingIndicator>
-                    <span /><span /><span />
-                  </TypingIndicator>
-                </BubbleContent>
-              </ChatBubble>
-            ) : showAnswer && (
-              <ChatBubble isAnswer>
-                <Avatar isAnswer>{currentFaq.avatar}</Avatar>
-                <BubbleContent>
-                  <BubbleText isAnswer>{currentFaq.answer}</BubbleText>
-                  <BubbleTime>Sophie & Max</BubbleTime>
-                </BubbleContent>
-              </ChatBubble>
-            )}
-          </ChatWindow>
-          
-          <ContactSection>
-            <ContactText>
-              <strong>Still have questions?</strong> We're happy to help!
-            </ContactText>
-            <ContactBtn href={`mailto:${contactEmail}`}>
-              Message us ✉️
-            </ContactBtn>
-          </ContactSection>
-        </ChatContainer>
+        <QuestionList>
+          {items.map((item, i) => (
+            <QuestionItem 
+              key={i} 
+              $index={i} 
+              $visible={visible}
+              $open={openIndex === i}
+            >
+              <QuestionHeader onClick={() => setOpenIndex(openIndex === i ? null : i)}>
+                <QuestionText>{item.question}</QuestionText>
+                <ToggleIcon $open={openIndex === i}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </ToggleIcon>
+              </QuestionHeader>
+              <AnswerWrapper $open={openIndex === i}>
+                <Answer>{item.answer}</Answer>
+              </AnswerWrapper>
+            </QuestionItem>
+          ))}
+        </QuestionList>
+        
+        <ContactBox $visible={visible}>
+          <ContactTitle>Noch Fragen? 🤔</ContactTitle>
+          <ContactText>Wir helfen euch gerne weiter!</ContactText>
+          <ContactButton href={`mailto:${contactEmail}`}>
+            E-Mail schreiben →
+          </ContactButton>
+        </ContactBox>
       </Container>
     </Section>
   );

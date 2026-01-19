@@ -1,217 +1,167 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import styled, { keyframes } from 'styled-components';
 
-const marquee = keyframes`
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-`;
-
-const marqueeReverse = keyframes`
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-`;
-
-const zoomIn = keyframes`
-  from { transform: scale(1.2); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+const fadeIn = keyframes`
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 `;
 
 const Section = styled.section`
-  padding: 8rem 0;
-  background: var(--black);
-  position: relative;
-  overflow: hidden;
+  padding: 8rem 2rem;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
 `;
 
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 3rem;
-  
-  @media (max-width: 768px) {
-    padding: 0 1.5rem;
-  }
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 4rem;
-  flex-wrap: wrap;
-  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
   
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-`;
-
-const TitleGroup = styled.div``;
-
-const Eyebrow = styled.div`
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1rem;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
 `;
 
 const Title = styled.h2`
-  font-size: clamp(3rem, 8vw, 5rem);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  color: var(--white);
-  letter-spacing: -0.03em;
+  color: #fff;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
-const ViewAllBtn = styled.button`
-  padding: 1rem 2rem;
+const ViewAllButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Sora', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--white);
-  background: transparent;
-  border: 2px solid var(--coral);
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
   border-radius: 50px;
-  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.2);
   transition: all 0.3s ease;
+  opacity: ${p => p.$visible ? 1 : 0};
   
   &:hover {
-    background: var(--coral);
-    transform: translateY(-3px);
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
   }
 `;
 
-// Auto-scrolling marquee rows
-const MarqueeWrapper = styled.div`
-  overflow: hidden;
-  padding: 1rem 0;
-`;
-
-const MarqueeTrack = styled.div`
-  display: flex;
-  gap: 1.5rem;
-  width: max-content;
-  ${p => css`
-    animation: ${p.reverse ? marqueeReverse : marquee} ${p.duration}s linear infinite;
-  `}
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 220px);
+  gap: 1rem;
   
-  &:hover {
-    animation-play-state: paused;
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 180px);
+  }
+  
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 200px);
   }
 `;
 
-const MarqueeItem = styled.div`
-  flex-shrink: 0;
-  width: ${p => p.size === 'large' ? '400px' : p.size === 'medium' ? '300px' : '200px'};
-  aspect-ratio: ${p => p.size === 'large' ? '16/10' : p.size === 'medium' ? '4/3' : '1/1'};
-  border-radius: 15px;
-  overflow: hidden;
+const ImageWrapper = styled.div`
   position: relative;
+  overflow: hidden;
+  border-radius: 20px;
   cursor: pointer;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.8s ease;
+  transition-delay: ${p => p.$delay}s;
   
-  &:hover {
-    .image { transform: scale(1.1); }
-    .overlay { opacity: 1; }
+  &:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+  
+  @media (max-width: 1000px) {
+    &:nth-child(1) { grid-column: span 2; grid-row: span 1; }
   }
   
-  @media (max-width: 600px) {
-    width: ${p => p.size === 'large' ? '300px' : p.size === 'medium' ? '220px' : '150px'};
+  @media (max-width: 500px) {
+    &:nth-child(1) { grid-column: span 1; }
+  }
+  
+  &:hover .overlay {
+    opacity: 1;
+  }
+  
+  &:hover img, &:hover .gradient {
+    transform: scale(1.1);
   }
 `;
 
-const MarqueeImage = styled.div`
+const GradientPlaceholder = styled.div`
   width: 100%;
   height: 100%;
-  background: ${p => p.gradient};
+  background: ${p => p.$gradient || 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
   transition: transform 0.6s ease;
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 `;
 
-const Placeholder = styled.div`
+const Image = styled.img`
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${p => p.gradient};
-  
-  span {
-    font-size: 3rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.2);
-  }
+  object-fit: cover;
+  transition: transform 0.6s ease;
 `;
 
-const ItemOverlay = styled.div`
+const Overlay = styled.div`
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  padding: 1.5rem;
   opacity: 0;
   transition: opacity 0.3s ease;
-  
-  span {
-    width: 50px;
-    height: 50px;
-    background: var(--white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-  }
 `;
 
-// Lightbox
+const OverlayText = styled.span`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+`;
+
 const Lightbox = styled.div`
   position: fixed;
   inset: 0;
-  z-index: 2000;
   background: rgba(0,0,0,0.95);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  opacity: ${p => p.isOpen ? 1 : 0};
-  visibility: ${p => p.isOpen ? 'visible' : 'hidden'};
+  opacity: ${p => p.$open ? 1 : 0};
+  visibility: ${p => p.$open ? 'visible' : 'hidden'};
   transition: all 0.3s ease;
 `;
 
 const LightboxContent = styled.div`
   max-width: 90vw;
-  max-height: 85vh;
-  border-radius: 20px;
-  overflow: hidden;
-  animation: ${zoomIn} 0.4s ease;
+  max-height: 90vh;
+  animation: ${fadeIn} 0.3s ease;
   
   img {
     max-width: 100%;
-    max-height: 85vh;
+    max-height: 90vh;
     object-fit: contain;
-  }
-`;
-
-const LightboxPlaceholder = styled.div`
-  width: 70vw;
-  height: 60vh;
-  max-width: 900px;
-  background: linear-gradient(135deg, var(--coral), var(--purple));
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  span {
-    font-size: 5rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.3);
+    border-radius: 12px;
   }
 `;
 
@@ -219,76 +169,63 @@ const LightboxClose = styled.button`
   position: absolute;
   top: 2rem;
   right: 2rem;
-  width: 60px;
-  height: 60px;
-  background: var(--white);
+  width: 48px;
+  height: 48px;
+  background: rgba(255,255,255,0.1);
   border: none;
   border-radius: 50%;
+  color: #fff;
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
-    background: var(--coral);
-    color: var(--white);
-    transform: rotate(90deg);
+    background: rgba(255,255,255,0.2);
   }
 `;
 
-const LightboxNav = styled.button`
+const NavButton = styled.button`
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 60px;
-  height: 60px;
-  background: var(--white);
+  ${p => p.$direction === 'prev' ? 'left: 2rem;' : 'right: 2rem;'}
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,0.1);
   border: none;
   border-radius: 50%;
+  color: #fff;
   font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  ${p => p.direction === 'prev' ? 'left: 2rem;' : 'right: 2rem;'}
   
   &:hover {
-    background: var(--coral);
-    color: var(--white);
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
   }
 `;
 
-const LightboxCounter = styled.div`
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--white);
-  background: rgba(0,0,0,0.5);
-  padding: 0.5rem 1.5rem;
-  border-radius: 30px;
-`;
-
-// Color gradients for placeholders
-const gradients = [
-  'linear-gradient(135deg, var(--coral), var(--pink))',
-  'linear-gradient(135deg, var(--electric), var(--purple))',
-  'linear-gradient(135deg, var(--yellow), var(--coral))',
-  'linear-gradient(135deg, var(--purple), var(--pink))',
-  'linear-gradient(135deg, var(--coral), var(--electric))',
-  'linear-gradient(135deg, var(--pink), var(--yellow))',
-];
-
-function Gallery({
-  images = Array(12).fill(null).map((_, i) => ({ 
-    src: null, 
-    alt: `Photo ${i + 1}`,
-    size: i % 5 === 0 ? 'large' : i % 3 === 0 ? 'medium' : 'small'
-  })),
-}) {
+function Gallery({ title = 'Captured moments', images = [] }) {
   const [visible, setVisible] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const sectionRef = useRef(null);
+
+  const gradients = [
+    'linear-gradient(135deg, #667eea, #764ba2)',
+    'linear-gradient(135deg, #764ba2, #EC4899)',
+    'linear-gradient(135deg, #EC4899, #F97316)',
+    'linear-gradient(135deg, #F97316, #fbbf24)',
+    'linear-gradient(135deg, #10b981, #3b82f6)',
+    'linear-gradient(135deg, #8B5CF6, #06b6d4)',
+  ];
+
+  const defaultImages = gradients.map((gradient, i) => ({ 
+    src: null, 
+    alt: `Moment ${i + 1}`,
+    gradient 
+  }));
+  
+  const galleryImages = images.length > 0 ? images : defaultImages;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -299,104 +236,79 @@ function Gallery({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = lightboxOpen ? 'hidden' : 'unset';
-    const handleKey = (e) => {
-      if (!lightboxOpen) return;
-      if (e.key === 'Escape') setLightboxOpen(false);
-      if (e.key === 'ArrowLeft' && currentIndex > 0) setCurrentIndex(currentIndex - 1);
-      if (e.key === 'ArrowRight' && currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [lightboxOpen, currentIndex, images.length]);
-
   const openLightbox = (index) => {
+    if (!galleryImages[index]?.src) return;
     setCurrentIndex(index);
     setLightboxOpen(true);
+    document.body.style.overflow = 'hidden';
   };
 
-  // Split images into rows for marquee
-  const row1 = images.slice(0, Math.ceil(images.length / 2));
-  const row2 = images.slice(Math.ceil(images.length / 2));
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    document.body.style.overflow = '';
+  };
+
+  const navigate = useCallback((direction) => {
+    if (direction === 'prev') {
+      setCurrentIndex(prev => prev === 0 ? galleryImages.length - 1 : prev - 1);
+    } else {
+      setCurrentIndex(prev => prev === galleryImages.length - 1 ? 0 : prev + 1);
+    }
+  }, [galleryImages.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!lightboxOpen) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigate('prev');
+      if (e.key === 'ArrowRight') navigate('next');
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, navigate]);
 
   return (
     <Section ref={sectionRef} id="gallery">
       <Container>
-        <Header visible={visible}>
-          <TitleGroup>
-            <Eyebrow>Gallery</Eyebrow>
-            <Title>Captured moments</Title>
-          </TitleGroup>
-          <ViewAllBtn onClick={() => openLightbox(0)}>View All</ViewAllBtn>
+        <Header>
+          <Title $visible={visible}>{title}</Title>
+          <ViewAllButton href="#" $visible={visible}>
+            View all
+            <span>→</span>
+          </ViewAllButton>
         </Header>
+        
+        <Grid>
+          {galleryImages.slice(0, 6).map((img, i) => (
+            <ImageWrapper 
+              key={i} 
+              $visible={visible}
+              $delay={0.1 + i * 0.1}
+              onClick={() => openLightbox(i)}
+            >
+              {img.src ? (
+                <Image src={img.src} alt={img.alt} />
+              ) : (
+                <GradientPlaceholder className="gradient" $gradient={img.gradient} />
+              )}
+              <Overlay className="overlay">
+                <OverlayText>{img.alt}</OverlayText>
+              </Overlay>
+            </ImageWrapper>
+          ))}
+        </Grid>
+        
+        <Lightbox $open={lightboxOpen} onClick={closeLightbox}>
+          <LightboxClose onClick={closeLightbox}>×</LightboxClose>
+          <NavButton $direction="prev" onClick={(e) => { e.stopPropagation(); navigate('prev'); }}>‹</NavButton>
+          <LightboxContent onClick={e => e.stopPropagation()}>
+            {galleryImages[currentIndex]?.src && (
+              <img src={galleryImages[currentIndex].src} alt={galleryImages[currentIndex].alt} />
+            )}
+          </LightboxContent>
+          <NavButton $direction="next" onClick={(e) => { e.stopPropagation(); navigate('next'); }}>›</NavButton>
+        </Lightbox>
       </Container>
-      
-      {/* Row 1 - Normal direction */}
-      <MarqueeWrapper>
-        <MarqueeTrack duration={40}>
-          {[...row1, ...row1].map((img, i) => (
-            <MarqueeItem 
-              key={i} 
-              size={img.size}
-              onClick={() => openLightbox(i % row1.length)}
-            >
-              <MarqueeImage className="image" gradient={gradients[i % gradients.length]}>
-                {img.src ? (
-                  <img src={img.src} alt={img.alt} />
-                ) : (
-                  <Placeholder gradient={gradients[i % gradients.length]}>
-                    <span>{(i % row1.length) + 1}</span>
-                  </Placeholder>
-                )}
-              </MarqueeImage>
-              <ItemOverlay className="overlay"><span>+</span></ItemOverlay>
-            </MarqueeItem>
-          ))}
-        </MarqueeTrack>
-      </MarqueeWrapper>
-      
-      {/* Row 2 - Reverse direction */}
-      <MarqueeWrapper>
-        <MarqueeTrack duration={45} reverse>
-          {[...row2, ...row2].map((img, i) => (
-            <MarqueeItem 
-              key={i} 
-              size={img.size}
-              onClick={() => openLightbox(row1.length + (i % row2.length))}
-            >
-              <MarqueeImage className="image" gradient={gradients[(i + 3) % gradients.length]}>
-                {img.src ? (
-                  <img src={img.src} alt={img.alt} />
-                ) : (
-                  <Placeholder gradient={gradients[(i + 3) % gradients.length]}>
-                    <span>{row1.length + (i % row2.length) + 1}</span>
-                  </Placeholder>
-                )}
-              </MarqueeImage>
-              <ItemOverlay className="overlay"><span>+</span></ItemOverlay>
-            </MarqueeItem>
-          ))}
-        </MarqueeTrack>
-      </MarqueeWrapper>
-      
-      <Lightbox isOpen={lightboxOpen} onClick={() => setLightboxOpen(false)}>
-        <LightboxClose onClick={() => setLightboxOpen(false)}>✕</LightboxClose>
-        {currentIndex > 0 && (
-          <LightboxNav direction="prev" onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex - 1); }}>←</LightboxNav>
-        )}
-        <LightboxContent onClick={(e) => e.stopPropagation()}>
-          {images[currentIndex]?.src ? (
-            <img src={images[currentIndex].src} alt="" />
-          ) : (
-            <LightboxPlaceholder><span>{currentIndex + 1}</span></LightboxPlaceholder>
-          )}
-        </LightboxContent>
-        {currentIndex < images.length - 1 && (
-          <LightboxNav direction="next" onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex + 1); }}>→</LightboxNav>
-        )}
-        <LightboxCounter>{currentIndex + 1} / {images.length}</LightboxCounter>
-      </Lightbox>
     </Section>
   );
 }

@@ -7,8 +7,29 @@ const pulse = keyframes`
 `;
 
 const FooterSection = styled.footer`
-  padding: 6rem 2rem 3rem;
-  background: var(--black);
+  background: #fff;
+  padding: 6rem 2rem 2rem;
+  position: relative;
+`;
+
+const IncludedBadge = styled.div`
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  
+  &::before { content: '✓'; }
 `;
 
 const Container = styled.div`
@@ -16,330 +37,256 @@ const Container = styled.div`
   margin: 0 auto;
 `;
 
-const TopSection = styled.div`
+const MainContent = styled.div`
   text-align: center;
-  margin-bottom: 5rem;
+  margin-bottom: 4rem;
 `;
 
-const BigText = styled.h3`
-  font-size: clamp(3rem, 10vw, 8rem);
+const Title = styled.h2`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 700;
-  color: var(--white);
-  letter-spacing: -0.03em;
-  line-height: 1;
+  color: #1a1a2e;
   margin-bottom: 2rem;
-  
-  span {
-    color: var(--coral);
-  }
+  line-height: 1;
 `;
 
 const CTAButton = styled.a`
-  display: inline-block;
-  padding: 1.2rem 3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  font-weight: 700;
-  color: var(--black);
-  background: var(--yellow);
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  padding: 1.25rem 2.5rem;
   border-radius: 50px;
   text-decoration: none;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
   animation: ${pulse} 2s ease-in-out infinite;
   
   &:hover {
-    background: var(--coral);
-    color: var(--white);
     transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
   }
 `;
 
 const Divider = styled.div`
   height: 1px;
-  background: var(--gray-800);
-  margin-bottom: 3rem;
+  background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+  margin-bottom: 2rem;
 `;
 
-const BottomSection = styled.div`
-  display: grid;
-  grid-template-columns: 2fr repeat(2, 1fr);
-  gap: 4rem;
+const Bottom = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    flex-direction: column;
     text-align: center;
   }
 `;
 
-const BrandCol = styled.div``;
-
-const Logo = styled.div`
-  font-size: 1.8rem;
+const Names = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--white);
-  margin-bottom: 1rem;
-  
-  span { color: var(--coral); }
-`;
-
-const Tagline = styled.p`
-  font-size: 0.95rem;
-  color: var(--gray-600);
-  line-height: 1.7;
-  max-width: 300px;
-  
-  @media (max-width: 768px) {
-    max-width: 100%;
-  }
-`;
-
-const Column = styled.div``;
-
-const ColumnTitle = styled.h4`
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1.5rem;
-`;
-
-const LinkList = styled.ul`
+  color: #1a1a2e;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
   
-  @media (max-width: 768px) {
-    align-items: center;
+  .ampersand {
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
-const LinkItem = styled.li`
-  a, button {
-    font-size: 0.9rem;
-    color: var(--gray-300);
-    text-decoration: none;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    
-    &:hover { color: var(--white); }
-  }
+const Copyright = styled.p`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  color: #9ca3af;
 `;
 
-const Copyright = styled.div`
-  text-align: center;
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--gray-800);
+const AdminButton = styled.button`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
   
-  p {
-    font-size: 0.8rem;
-    color: var(--gray-600);
-    
-    a {
-      color: var(--coral);
-      text-decoration: none;
-      
-      &:hover { text-decoration: underline; }
-    }
-  }
+  &:hover { color: #6b7280; }
 `;
 
-// Modal
-const ModalOverlay = styled.div`
+const Modal = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 2rem;
-  opacity: ${p => p.isOpen ? 1 : 0};
-  visibility: ${p => p.isOpen ? 'visible' : 'hidden'};
+  opacity: ${p => p.$open ? 1 : 0};
+  visibility: ${p => p.$open ? 'visible' : 'hidden'};
   transition: all 0.3s ease;
+  padding: 2rem;
 `;
 
-const Modal = styled.div`
-  background: var(--white);
-  border-radius: 30px;
-  width: 100%;
+const ModalContent = styled.div`
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 24px;
   max-width: 400px;
-  padding: 3rem;
+  width: 100%;
   position: relative;
 `;
 
-const ModalClose = styled.button`
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  width: 40px;
-  height: 40px;
-  background: var(--gray-100);
-  border: none;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover { background: var(--coral); color: var(--white); }
-`;
-
 const ModalTitle = styled.h3`
-  font-size: 1.8rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--black);
-  margin-bottom: 0.5rem;
-`;
-
-const ModalSubtitle = styled.p`
-  font-size: 0.9rem;
-  color: var(--gray-600);
+  color: #1a1a2e;
+  text-align: center;
   margin-bottom: 2rem;
 `;
 
-const LoginForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+const FormGroup = styled.div`
+  margin-bottom: 1rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: 1rem;
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: var(--black);
-  background: var(--gray-100);
-  border: 2px solid transparent;
-  border-radius: 15px;
+  color: #1a1a2e;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: var(--coral);
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
   }
 `;
 
-const LoginBtn = styled.button`
+const SubmitButton = styled.button`
   width: 100%;
   padding: 1rem;
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  font-weight: 700;
-  color: var(--white);
-  background: var(--coral);
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
   border: none;
-  border-radius: 50px;
-  margin-top: 0.5rem;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 0.5rem;
   
-  &:hover { background: var(--coral-dark); }
-  &:disabled { opacity: 0.5; }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+  }
 `;
 
-const ErrorMsg = styled.p`
+const Error = styled.p`
+  font-family: 'Sora', sans-serif;
   font-size: 0.85rem;
-  color: var(--coral);
+  color: #ef4444;
   text-align: center;
   margin-top: 1rem;
 `;
 
-function Footer({
-  coupleNames = 'Sophie & Max',
-  tagline = 'Can\'t wait to celebrate our love story with all of you!',
-  links = [
-    { label: 'Our Story', href: '#story' },
-    { label: 'Details', href: '#location' },
-    { label: 'RSVP', href: '#rsvp' },
-  ],
-  quickLinks = [
-    { label: 'Gallery', href: '#gallery' },
-    { label: 'FAQ', href: '#faq' },
-    { label: 'Wedding ABC', href: '#abc' },
-  ],
-  onLogin = (email, password) => console.log('Login:', email, password),
-  adminEmail = 'demo',
-  adminPassword = 'demo',
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function Footer({ coupleNames = 'Sophie & Max', onLogin, adminEmail = 'admin', adminPassword = 'password', showBadge = false }) {
+  const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
+    
     if (email === adminEmail && password === adminPassword) {
-      onLogin(email, password);
-      setIsModalOpen(false);
+      if (onLogin) onLogin(email, password);
+      setModalOpen(false);
+      setEmail('');
+      setPassword('');
     } else {
-      setError('Invalid credentials');
+      setError('Ungültige Anmeldedaten');
     }
-    setLoading(false);
   };
 
+  const names = coupleNames.split('&');
+  const year = new Date().getFullYear();
+
   return (
-    <>
-      <FooterSection>
-        <Container>
-          <TopSection>
-            <BigText>See you <span>soon!</span></BigText>
-            <CTAButton href="#rsvp">RSVP Now →</CTAButton>
-          </TopSection>
-          
-          <Divider />
-          
-          <BottomSection>
-            <BrandCol>
-              <Logo>{coupleNames.split(' & ')[0]}<span>&</span>{coupleNames.split(' & ')[1]}</Logo>
-              <Tagline>{tagline}</Tagline>
-            </BrandCol>
-            
-            <Column>
-              <ColumnTitle>Navigation</ColumnTitle>
-              <LinkList>
-                {links.map((link, i) => (
-                  <LinkItem key={i}><a href={link.href}>{link.label}</a></LinkItem>
-                ))}
-              </LinkList>
-            </Column>
-            
-            <Column>
-              <ColumnTitle>Quick Links</ColumnTitle>
-              <LinkList>
-                {quickLinks.map((link, i) => (
-                  <LinkItem key={i}><a href={link.href}>{link.label}</a></LinkItem>
-                ))}
-                <LinkItem><button onClick={() => setIsModalOpen(true)}>Admin 🔒</button></LinkItem>
-              </LinkList>
-            </Column>
-          </BottomSection>
-          
-          <Copyright>
-            <p>© {new Date().getFullYear()} {coupleNames} • Made with ❤️ by <a href="https://si-wedding.de" target="_blank" rel="noopener noreferrer">S&I Wedding</a></p>
-          </Copyright>
-        </Container>
-      </FooterSection>
+    <FooterSection id="footer">
+      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
       
-      <ModalOverlay isOpen={isModalOpen} onClick={() => setIsModalOpen(false)}>
-        <Modal onClick={e => e.stopPropagation()}>
-          <ModalClose onClick={() => setIsModalOpen(false)}>✕</ModalClose>
+      <Container>
+        <MainContent>
+          <Title>See you soon!</Title>
+          <CTAButton href="#rsvp">
+            RSVP Now
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </CTAButton>
+        </MainContent>
+        
+        <Divider />
+        
+        <Bottom>
+          <Names>
+            {names[0]?.trim()} <span className="ampersand">&</span> {names[1]?.trim()}
+          </Names>
+          <Copyright>© {year} · Made with 💕</Copyright>
+          <AdminButton onClick={() => setModalOpen(true)}>Admin</AdminButton>
+        </Bottom>
+      </Container>
+      
+      <Modal $open={modalOpen} onClick={() => setModalOpen(false)}>
+        <ModalContent onClick={e => e.stopPropagation()}>
           <ModalTitle>Admin Login</ModalTitle>
-          <ModalSubtitle>Access RSVP data and photos</ModalSubtitle>
-          <LoginForm onSubmit={handleLogin}>
-            <Input type="text" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-            <Input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
-            <LoginBtn type="submit" disabled={loading}>{loading ? 'Loading...' : 'Login'}</LoginBtn>
-            {error && <ErrorMsg>{error}</ErrorMsg>}
-          </LoginForm>
-        </Modal>
-      </ModalOverlay>
-    </>
+          <form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label>E-Mail</Label>
+              <Input type="text" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@email.de" required />
+            </FormGroup>
+            <FormGroup>
+              <Label>Passwort</Label>
+              <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+            </FormGroup>
+            <SubmitButton type="submit">Anmelden</SubmitButton>
+            {error && <Error>{error}</Error>}
+          </form>
+        </ModalContent>
+      </Modal>
+    </FooterSection>
   );
 }
 

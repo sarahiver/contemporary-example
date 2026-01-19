@@ -1,54 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
-const slideIn = keyframes`
-  from { transform: translateX(50px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-`;
-
-const pulse = keyframes`
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, var(--coral) 0%, var(--purple) 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
   position: relative;
   overflow: hidden;
 `;
 
-// Background decorations
-const BgCircle = styled.div`
+const IncludedBadge = styled.div`
   position: absolute;
-  width: ${p => p.size}px;
-  height: ${p => p.size}px;
-  border: 2px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
+  top: 2rem;
+  right: 2rem;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  
+  &::before { content: '✓'; }
 `;
 
 const Container = styled.div`
-  max-width: 700px;
+  max-width: 550px;
   margin: 0 auto;
-  width: 100%;
-`;
-
-const Card = styled.div`
-  background: var(--white);
-  border-radius: 30px;
-  padding: 3rem;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.2);
-  
-  @media (max-width: 600px) {
-    padding: 2rem;
-    border-radius: 20px;
-  }
 `;
 
 const Header = styled.div`
@@ -57,86 +46,35 @@ const Header = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: 2.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  color: var(--black);
+  color: #fff;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.02em;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
 const Subtitle = styled.p`
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: var(--gray-600);
+  color: rgba(255,255,255,0.85);
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
+  transition-delay: 0.1s;
 `;
 
-// Progress bar
-const ProgressWrapper = styled.div`
-  margin-bottom: 3rem;
-`;
-
-const ProgressSteps = styled.div`
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: 40px;
-    right: 40px;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-  }
-`;
-
-const ProgressLine = styled.div`
-  position: absolute;
-  top: 20px;
-  left: 40px;
-  height: 4px;
-  background: var(--coral);
-  border-radius: 2px;
-  width: ${p => p.progress}%;
-  transition: width 0.5s ease;
-`;
-
-const Step = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-`;
-
-const StepCircle = styled.div`
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: ${p => p.active ? 'var(--coral)' : p.completed ? 'var(--electric)' : 'var(--gray-200)'};
-  color: ${p => p.active || p.completed ? 'var(--white)' : 'var(--gray-600)'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  ${p => p.active && css`animation: ${pulse} 2s ease-in-out infinite;`}
-`;
-
-const StepLabel = styled.span`
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: ${p => p.active ? 'var(--coral)' : 'var(--gray-600)'};
-  margin-top: 0.75rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-`;
-
-// Form content
-const FormContent = styled.div`
-  animation: ${slideIn} 0.4s ease;
+const Form = styled.form`
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.8s ease;
+  transition-delay: 0.2s;
 `;
 
 const FormGroup = styled.div`
@@ -145,381 +83,304 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   display: block;
+  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gray-600);
-  margin-bottom: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 1.2rem 1.5rem;
+  padding: 1rem 1.25rem;
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: var(--black);
-  background: var(--gray-100);
-  border: 2px solid transparent;
-  border-radius: 15px;
+  color: #1a1a2e;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
   transition: all 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: var(--coral);
-    background: var(--white);
+    border-color: #8B5CF6;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  }
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const RadioLabel = styled.label`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: ${p => p.$checked ? '#fff' : '#6b7280'};
+  background: ${p => p.$checked ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : '#f9fafb'};
+  border: 2px solid ${p => p.$checked ? 'transparent' : '#e5e7eb'};
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: ${p => p.$checked ? 'transparent' : '#8B5CF6'};
   }
   
-  &::placeholder { color: var(--gray-300); }
+  input { display: none; }
 `;
 
 const Select = styled.select`
   width: 100%;
-  padding: 1.2rem 1.5rem;
+  padding: 1rem 1.25rem;
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: var(--black);
-  background: var(--gray-100);
-  border: 2px solid transparent;
-  border-radius: 15px;
-  cursor: pointer;
-  
-  &:focus {
-    outline: none;
-    border-color: var(--coral);
-  }
-`;
-
-const Textarea = styled.textarea`
-  width: 100%;
-  padding: 1.2rem 1.5rem;
-  font-size: 1rem;
-  color: var(--black);
-  background: var(--gray-100);
-  border: 2px solid transparent;
-  border-radius: 15px;
-  min-height: 120px;
-  resize: vertical;
-  
-  &:focus {
-    outline: none;
-    border-color: var(--coral);
-    background: var(--white);
-  }
-`;
-
-// Yes/No toggle buttons
-const ToggleGroup = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-`;
-
-const ToggleBtn = styled.button`
-  padding: 1.5rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: ${p => p.selected ? 'var(--white)' : 'var(--black)'};
-  background: ${p => p.selected ? 'var(--coral)' : 'var(--gray-100)'};
-  border: 2px solid ${p => p.selected ? 'var(--coral)' : 'transparent'};
-  border-radius: 15px;
+  color: #1a1a2e;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   
-  span {
-    display: block;
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+  &:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  color: #1a1a2e;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  min-height: 100px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  }
+`;
+
+const SubmitButton = styled.button`
+  width: 100%;
+  padding: 1.25rem 2rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background-size: 200% 100%;
+    animation: ${shimmer} 2s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
   
   &:hover {
-    ${p => !p.selected && `background: var(--gray-200);`}
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    
+    &::before { opacity: 1; }
   }
-`;
-
-// Navigation buttons
-const NavButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 2rem;
-`;
-
-const NavBtn = styled.button`
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  ${p => p.primary ? `
-    background: var(--coral);
-    color: var(--white);
-    border: none;
-    flex: 1;
-    
-    &:hover {
-      background: var(--coral-dark);
-      transform: translateY(-2px);
-    }
-  ` : `
-    background: transparent;
-    color: var(--gray-600);
-    border: 2px solid var(--gray-200);
-    
-    &:hover {
-      border-color: var(--gray-300);
-    }
-  `}
   
   &:disabled {
-    opacity: 0.5;
+    background: #e5e7eb;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;
 
-// Success view
-const SuccessView = styled.div`
+const Success = styled.div`
   text-align: center;
-  padding: 2rem 0;
-  
-  .emoji {
-    font-size: 5rem;
-    margin-bottom: 1.5rem;
-    animation: ${pulse} 2s ease-in-out infinite;
-  }
-  
-  h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 1rem;
-  }
-  
-  p {
-    font-size: 1.1rem;
-    color: var(--gray-600);
-    line-height: 1.6;
-  }
+  padding: 3rem;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.2);
 `;
 
-function RSVP({
-  deadline = '15. September 2025',
-  menuOptions = ['Vegetarisch', 'Vegan', 'Fleisch', 'Fisch'],
-  onSubmit = (data) => console.log('RSVP:', data),
-}) {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    attendance: null,
-    guests: '1',
-    menu: '',
-    dietary: '',
-    song: '',
-    message: '',
-  });
+const SuccessIcon = styled.div`
+  font-size: 4rem;
+  margin-bottom: 1rem;
+`;
+
+const SuccessTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+`;
+
+const SuccessText = styled.p`
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  color: #6b7280;
+`;
+
+function RSVP({ title = 'RSVP', subtitle = 'Bitte lasst uns bis zum 15. Juni wissen, ob ihr dabei seid.', onSubmit, showBadge = false }) {
+  const [visible, setVisible] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [attending, setAttending] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', guests: '1', menu: '', dietary: '', message: '' });
+  const sectionRef = useRef(null);
 
-  const totalSteps = 3;
-  const progress = ((step - 1) / (totalSteps - 1)) * 100;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
-  const updateField = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const canProceed = () => {
-    if (step === 1) return formData.name && formData.email && formData.attendance !== null;
-    if (step === 2) return formData.attendance === 'no' || (formData.menu);
-    return true;
-  };
-
-  const handleNext = () => {
-    if (step < totalSteps) setStep(step + 1);
-    else {
-      onSubmit(formData);
-      setSubmitted(true);
-    }
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (onSubmit) await onSubmit({ ...formData, attending });
+    setSubmitted(true);
   };
 
   if (submitted) {
     return (
-      <Section id="rsvp">
-        <BgCircle size={300} top="10%" left="-5%" />
-        <BgCircle size={200} top="60%" right="-3%" />
+      <Section ref={sectionRef} id="rsvp">
+        {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
         <Container>
-          <Card>
-            <SuccessView>
-              <div className="emoji">{formData.attendance === 'yes' ? '🎉' : '💔'}</div>
-              <h3>{formData.attendance === 'yes' ? 'Awesome!' : 'We\'ll miss you!'}</h3>
-              <p>
-                {formData.attendance === 'yes' 
-                  ? `Thanks ${formData.name}! We can't wait to celebrate with you.`
-                  : `Thanks for letting us know, ${formData.name}. We'll be thinking of you!`
-                }
-              </p>
-            </SuccessView>
-          </Card>
+          <Success>
+            <SuccessIcon>{attending === 'yes' ? '🎉' : '💕'}</SuccessIcon>
+            <SuccessTitle>{attending === 'yes' ? 'Awesome!' : 'Danke!'}</SuccessTitle>
+            <SuccessText>
+              {attending === 'yes' ? 'Wir freuen uns riesig auf euch!' : 'Schade, aber wir verstehen das. Wir denken an euch!'}
+            </SuccessText>
+          </Success>
         </Container>
       </Section>
     );
   }
 
   return (
-    <Section id="rsvp">
-      <BgCircle size={300} top="10%" left="-5%" />
-      <BgCircle size={200} top="60%" right="-3%" />
-      <BgCircle size={150} top="80%" left="20%" />
-      
+    <Section ref={sectionRef} id="rsvp">
+      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
       <Container>
-        <Card>
-          <Header>
-            <Title>RSVP</Title>
-            <Subtitle>Let us know if you can make it!</Subtitle>
-          </Header>
+        <Header>
+          <Title $visible={visible}>{title}</Title>
+          <Subtitle $visible={visible}>{subtitle}</Subtitle>
+        </Header>
+        
+        <Form $visible={visible} onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label>Name *</Label>
+            <Input 
+              type="text" 
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Vor- und Nachname"
+              required 
+            />
+          </FormGroup>
           
-          <ProgressWrapper>
-            <ProgressSteps>
-              <ProgressLine progress={progress} />
-              {['Info', 'Details', 'Finish'].map((label, i) => (
-                <Step key={i}>
-                  <StepCircle active={step === i + 1} completed={step > i + 1}>
-                    {step > i + 1 ? '✓' : i + 1}
-                  </StepCircle>
-                  <StepLabel active={step === i + 1}>{label}</StepLabel>
-                </Step>
-              ))}
-            </ProgressSteps>
-          </ProgressWrapper>
+          <FormGroup>
+            <Label>E-Mail *</Label>
+            <Input 
+              type="email"
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              placeholder="email@beispiel.de"
+              required 
+            />
+          </FormGroup>
           
-          <FormContent key={step}>
-            {step === 1 && (
-              <>
-                <FormGroup>
-                  <Label>Your Name</Label>
-                  <Input 
-                    type="text" 
-                    placeholder="Sophie & Max"
-                    value={formData.name}
-                    onChange={(e) => updateField('name', e.target.value)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Email</Label>
-                  <Input 
-                    type="email" 
-                    placeholder="you@email.com"
-                    value={formData.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Will you be joining us?</Label>
-                  <ToggleGroup>
-                    <ToggleBtn 
-                      type="button"
-                      selected={formData.attendance === 'yes'}
-                      onClick={() => updateField('attendance', 'yes')}
-                    >
-                      <span>🎉</span>
-                      Hell Yes!
-                    </ToggleBtn>
-                    <ToggleBtn 
-                      type="button"
-                      selected={formData.attendance === 'no'}
-                      onClick={() => updateField('attendance', 'no')}
-                    >
-                      <span>😢</span>
-                      Can't make it
-                    </ToggleBtn>
-                  </ToggleGroup>
-                </FormGroup>
-              </>
-            )}
-            
-            {step === 2 && formData.attendance === 'yes' && (
-              <>
-                <FormGroup>
-                  <Label>How many guests?</Label>
-                  <Select 
-                    value={formData.guests}
-                    onChange={(e) => updateField('guests', e.target.value)}
-                  >
-                    {[1,2,3,4,5].map(n => (
-                      <option key={n} value={n}>{n} {n === 1 ? 'person' : 'people'}</option>
-                    ))}
-                  </Select>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Menu Choice</Label>
-                  <Select 
-                    value={formData.menu}
-                    onChange={(e) => updateField('menu', e.target.value)}
-                  >
-                    <option value="">Select your preference</option>
-                    {menuOptions.map((opt, i) => (
-                      <option key={i} value={opt.toLowerCase()}>{opt}</option>
-                    ))}
-                  </Select>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Dietary requirements (optional)</Label>
-                  <Input 
-                    type="text" 
-                    placeholder="Allergies, intolerances..."
-                    value={formData.dietary}
-                    onChange={(e) => updateField('dietary', e.target.value)}
-                  />
-                </FormGroup>
-              </>
-            )}
-            
-            {step === 2 && formData.attendance === 'no' && (
+          <FormGroup>
+            <Label>Bist du dabei? *</Label>
+            <RadioGroup>
+              <RadioLabel $checked={attending === 'yes'}>
+                <input type="radio" name="attending" checked={attending === 'yes'} onChange={() => setAttending('yes')} />
+                🎉 Ja, klar!
+              </RadioLabel>
+              <RadioLabel $checked={attending === 'no'}>
+                <input type="radio" name="attending" checked={attending === 'no'} onChange={() => setAttending('no')} />
+                😢 Leider nein
+              </RadioLabel>
+            </RadioGroup>
+          </FormGroup>
+          
+          {attending === 'yes' && (
+            <>
               <FormGroup>
-                <Label>Send us a message (optional)</Label>
-                <Textarea 
-                  placeholder="We'll miss you! Any words for the happy couple?"
-                  value={formData.message}
-                  onChange={(e) => updateField('message', e.target.value)}
+                <Label>Anzahl Gäste</Label>
+                <Select value={formData.guests} onChange={e => setFormData({ ...formData, guests: e.target.value })}>
+                  {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} {n === 1 ? 'Person' : 'Personen'}</option>)}
+                </Select>
+              </FormGroup>
+              
+              <FormGroup>
+                <Label>Menüwahl</Label>
+                <Select value={formData.menu} onChange={e => setFormData({ ...formData, menu: e.target.value })}>
+                  <option value="">Bitte auswählen</option>
+                  <option value="meat">🥩 Fleisch</option>
+                  <option value="fish">🐟 Fisch</option>
+                  <option value="veggie">🥗 Vegetarisch</option>
+                  <option value="vegan">🌱 Vegan</option>
+                </Select>
+              </FormGroup>
+              
+              <FormGroup>
+                <Label>Allergien / Unverträglichkeiten</Label>
+                <Input 
+                  type="text"
+                  value={formData.dietary}
+                  onChange={e => setFormData({ ...formData, dietary: e.target.value })}
+                  placeholder="z.B. Laktoseintoleranz, Nussallergie..."
                 />
               </FormGroup>
-            )}
-            
-            {step === 3 && (
-              <>
-                <FormGroup>
-                  <Label>Song Request 🎵</Label>
-                  <Input 
-                    type="text" 
-                    placeholder="What song gets you on the dance floor?"
-                    value={formData.song}
-                    onChange={(e) => updateField('song', e.target.value)}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Any message for us? (optional)</Label>
-                  <Textarea 
-                    placeholder="We'd love to hear from you!"
-                    value={formData.message}
-                    onChange={(e) => updateField('message', e.target.value)}
-                  />
-                </FormGroup>
-              </>
-            )}
-          </FormContent>
+            </>
+          )}
           
-          <NavButtons>
-            <NavBtn onClick={handleBack} disabled={step === 1}>
-              ← Back
-            </NavBtn>
-            <NavBtn primary onClick={handleNext} disabled={!canProceed()}>
-              {step === totalSteps ? 'Submit RSVP' : 'Next →'}
-            </NavBtn>
-          </NavButtons>
-        </Card>
+          <FormGroup>
+            <Label>Nachricht (optional)</Label>
+            <TextArea 
+              value={formData.message}
+              onChange={e => setFormData({ ...formData, message: e.target.value })}
+              placeholder="Noch etwas, das wir wissen sollten?"
+            />
+          </FormGroup>
+          
+          <SubmitButton type="submit" disabled={attending === null}>
+            Absenden ✨
+          </SubmitButton>
+        </Form>
       </Container>
     </Section>
   );

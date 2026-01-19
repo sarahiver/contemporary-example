@@ -8,7 +8,7 @@ const float = keyframes`
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: var(--white);
+  background: #fff;
   position: relative;
 `;
 
@@ -19,263 +19,164 @@ const Container = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 5rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
+  margin-bottom: 4rem;
 `;
 
 const Eyebrow = styled.div`
+  font-family: 'Sora', sans-serif;
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1rem;
-`;
-
-const Title = styled.h2`
-  font-size: clamp(3rem, 8vw, 5rem);
-  font-weight: 700;
-  color: var(--black);
-  letter-spacing: -0.03em;
-`;
-
-// Stacked cards layout
-const CardsStack = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-  
-  @media (min-width: 900px) {
-    gap: 0;
-    position: relative;
-  }
-`;
-
-const LocationCard = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
-  
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '50px'});
-  transition: all 0.8s ease;
-  transition-delay: ${p => p.index * 0.2}s;
-  
-  /* Alternate layout */
-  &:nth-child(even) {
-    .image-side { order: 2; }
-    .content-side { order: 1; }
-  }
-  
-  @media (min-width: 900px) {
-    /* Sticky stack effect */
-    position: sticky;
-    top: 150px;
-    background: var(--white);
-    padding: 2rem;
-    margin-bottom: 5rem;
-    border-radius: 30px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    
-    &:nth-child(even) {
-      .image-side { order: 1; }
-      .content-side { order: 2; }
-    }
-  }
-`;
-
-const ImageSide = styled.div`
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  aspect-ratio: 4/3;
-`;
-
-const ImageWrapper = styled.div`
-  position: absolute;
-  inset: 0;
-  background: ${p => p.gradient};
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s ease;
-  }
-  
-  ${LocationCard}:hover & img {
-    transform: scale(1.05);
-  }
-`;
-
-const Placeholder = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${p => p.gradient};
-  
-  span {
-    font-size: 5rem;
-    font-weight: 700;
-    color: rgba(255,255,255,0.2);
-  }
-`;
-
-const TypeBadge = styled.div`
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--black);
-  color: var(--white);
-  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  border-radius: 30px;
-  z-index: 5;
+  color: #8B5CF6;
+  margin-bottom: 1rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
-const FloatingEmoji = styled.div`
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  font-size: 3rem;
-  animation: ${float} 3s ease-in-out infinite;
-  z-index: 5;
-`;
-
-const ContentSide = styled.div`
-  padding: 1rem 0;
-`;
-
-const LocationNumber = styled.div`
-  font-size: 5rem;
+const Title = styled.h2`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  color: var(--gray-100);
-  line-height: 1;
+  color: #1a1a2e;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
+  transition-delay: 0.1s;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Card = styled.div`
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
+  transition: all 0.8s ease;
+  transition-delay: ${p => 0.2 + p.$index * 0.15}s;
+  
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+  }
+`;
+
+const CardImage = styled.div`
+  width: 100%;
+  height: 220px;
+  background: ${p => p.$image ? `url(${p.$image}) center/cover` : 'linear-gradient(135deg, #667eea, #764ba2, #EC4899)'};
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+  }
+`;
+
+const CardBadge = styled.div`
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8B5CF6;
+  z-index: 1;
+`;
+
+const CardContent = styled.div`
+  padding: 2rem;
+`;
+
+const CardTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
   margin-bottom: 1rem;
 `;
 
-const LocationName = styled.h3`
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--black);
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
-  
-  @media (max-width: 600px) {
-    font-size: 2rem;
-  }
-`;
-
-const Details = styled.div`
+const CardDetail = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-`;
-
-const DetailRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
   
   .icon {
-    width: 45px;
-    height: 45px;
-    background: var(--gray-100);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    flex-shrink: 0;
   }
   
   .text {
-    .label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gray-600);
-      margin-bottom: 0.2rem;
-    }
-    .value {
-      font-size: 1rem;
-      color: var(--black);
-    }
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
   }
 `;
 
-const Description = styled.p`
-  font-size: 1rem;
-  color: var(--gray-600);
-  line-height: 1.7;
-  margin-bottom: 2rem;
-`;
-
-const MapButton = styled.a`
+const CardButton = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: var(--coral);
-  color: var(--white);
+  gap: 0.5rem;
+  font-family: 'Sora', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  border-radius: 50px;
-  text-decoration: none;
+  color: #8B5CF6;
+  margin-top: 1rem;
   transition: all 0.3s ease;
   
   &:hover {
-    background: var(--coral-dark);
-    transform: translateX(5px);
+    color: #EC4899;
+    gap: 0.75rem;
   }
 `;
 
-function Locations({
-  locations = [
-    { 
-      type: 'Ceremony', 
-      name: 'Secret Garden', 
-      address: 'Mitte, Berlin', 
-      time: '14:00', 
-      description: 'Eine versteckte Oase mitten in der Stadt. Hier sagen wir "Ja" unter freiem Himmel, umgeben von wilden Blumen und alten Bäumen.', 
-      image: null, 
-      emoji: '🌿',
-      mapUrl: 'https://maps.google.com',
-      gradient: 'linear-gradient(135deg, var(--coral), var(--pink))'
-    },
-    { 
-      type: 'Celebration', 
-      name: 'The Loft', 
-      address: 'Kreuzberg, Berlin', 
-      time: '18:00', 
-      description: 'Industrial Chic meets Boho Vibes. Hohe Decken, exposed brick walls und die beste Tanzfläche der Stadt.', 
-      image: null, 
-      emoji: '🎉',
-      mapUrl: 'https://maps.google.com',
-      gradient: 'linear-gradient(135deg, var(--electric), var(--purple))'
-    },
-  ],
-}) {
+function Locations({ title = 'Where it all happens', locations = [] }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
+
+  const defaultLocations = [
+    { 
+      type: 'Zeremonie', 
+      name: 'Schloss Heidelberg', 
+      address: 'Schlosshof 1, 69117 Heidelberg', 
+      time: '14:00 Uhr',
+      description: 'Die Trauung findet in der historischen Schlosskapelle statt.',
+      image: null, 
+      mapUrl: 'https://maps.google.com' 
+    },
+    { 
+      type: 'Feier', 
+      name: 'Orangerie im Schlosspark', 
+      address: 'Schlosspark 5, 69117 Heidelberg', 
+      time: 'Ab 16:00 Uhr',
+      description: 'Hier feiern wir bis in die Nacht mit Dinner, Musik und Tanz.',
+      image: null, 
+      mapUrl: 'https://maps.google.com' 
+    },
+  ];
+
+  const items = locations.length > 0 ? locations : defaultLocations;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -289,61 +190,43 @@ function Locations({
   return (
     <Section ref={sectionRef} id="location">
       <Container>
-        <Header visible={visible}>
-          <Eyebrow>Venues</Eyebrow>
-          <Title>Where it all happens</Title>
+        <Header>
+          <Eyebrow $visible={visible}>📍 Die Locations</Eyebrow>
+          <Title $visible={visible}>{title}</Title>
         </Header>
         
-        <CardsStack>
-          {locations.map((loc, i) => (
-            <LocationCard key={i} index={i} visible={visible}>
-              <ImageSide className="image-side">
-                <TypeBadge>{loc.type}</TypeBadge>
-                <FloatingEmoji>{loc.emoji}</FloatingEmoji>
-                <ImageWrapper gradient={loc.gradient}>
-                  {loc.image ? (
-                    <img src={loc.image} alt={loc.name} />
-                  ) : (
-                    <Placeholder gradient={loc.gradient}>
-                      <span>0{i + 1}</span>
-                    </Placeholder>
-                  )}
-                </ImageWrapper>
-              </ImageSide>
-              
-              <ContentSide className="content-side">
-                <LocationNumber>0{i + 1}</LocationNumber>
-                <LocationName>{loc.name}</LocationName>
-                
-                <Details>
-                  <DetailRow>
-                    <div className="icon">📍</div>
-                    <div className="text">
-                      <div className="label">Location</div>
-                      <div className="value">{loc.address}</div>
-                    </div>
-                  </DetailRow>
-                  <DetailRow>
-                    <div className="icon">🕐</div>
-                    <div className="text">
-                      <div className="label">Time</div>
-                      <div className="value">{loc.time} Uhr</div>
-                    </div>
-                  </DetailRow>
-                </Details>
-                
-                <Description>{loc.description}</Description>
-                
-                {loc.mapUrl && (
-                  <MapButton href={loc.mapUrl} target="_blank">
-                    Get Directions
-                    <span>→</span>
-                  </MapButton>
+        <Grid>
+          {items.map((loc, i) => (
+            <Card key={i} $index={i} $visible={visible}>
+              <CardImage $image={loc.image}>
+                <CardBadge>{loc.type}</CardBadge>
+              </CardImage>
+              <CardContent>
+                <CardTitle>{loc.name}</CardTitle>
+                <CardDetail>
+                  <span className="icon">📍</span>
+                  <span className="text">{loc.address}</span>
+                </CardDetail>
+                <CardDetail>
+                  <span className="icon">🕐</span>
+                  <span className="text">{loc.time}</span>
+                </CardDetail>
+                {loc.description && (
+                  <CardDetail>
+                    <span className="icon">✨</span>
+                    <span className="text">{loc.description}</span>
+                  </CardDetail>
                 )}
-              </ContentSide>
-            </LocationCard>
+                {loc.mapUrl && (
+                  <CardButton href={loc.mapUrl} target="_blank" rel="noopener noreferrer">
+                    Route anzeigen
+                    <span>→</span>
+                  </CardButton>
+                )}
+              </CardContent>
+            </Card>
           ))}
-        </CardsStack>
+        </Grid>
       </Container>
     </Section>
   );

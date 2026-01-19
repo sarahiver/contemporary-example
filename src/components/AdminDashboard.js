@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
+import styled from 'styled-components';
 
 const Section = styled.section`
   min-height: 100vh;
-  padding: 8rem 2rem 4rem;
-  background: var(--gray-50);
+  padding: 6rem 2rem 4rem;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+`;
+
+const IncludedBadge = styled.div`
+  position: fixed;
+  top: 6rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 50px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  
+  &::before { content: '✓'; }
 `;
 
 const Container = styled.div`
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 `;
 
@@ -24,464 +40,264 @@ const Header = styled.div`
   margin-bottom: 3rem;
   flex-wrap: wrap;
   gap: 1rem;
-  animation: ${fadeIn} 0.6s ease;
 `;
 
-const TitleGroup = styled.div`
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 0.25rem;
-  }
-  
-  p {
-    font-size: 0.9rem;
-    color: var(--gray-500);
-  }
+const Title = styled.h1`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: #fff;
 `;
 
-const LogoutBtn = styled.button`
-  padding: 0.75rem 1.5rem;
+const LogoutButton = styled.button`
+  font-family: 'Sora', sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--gray-600);
-  background: var(--white);
-  border: 2px solid var(--gray-200);
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.75rem 1.5rem;
   border-radius: 50px;
+  cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
-    border-color: var(--coral);
-    color: var(--coral);
+    background: rgba(255,255,255,0.2);
   }
 `;
 
-// Stats grid with colorful cards
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
   margin-bottom: 3rem;
-  
-  @media (max-width: 1000px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 500px) { grid-template-columns: 1fr; }
 `;
 
 const StatCard = styled.div`
-  background: ${p => p.gradient || 'linear-gradient(135deg, var(--coral), var(--pink))'};
-  border-radius: 20px;
+  background: linear-gradient(135deg, ${p => p.$colors?.[0] || '#8B5CF6'}, ${p => p.$colors?.[1] || '#EC4899'});
   padding: 2rem;
-  color: var(--white);
+  border-radius: 20px;
   position: relative;
   overflow: hidden;
-  animation: ${fadeIn} 0.6s ease;
-  animation-delay: ${p => p.index * 0.1}s;
-  animation-fill-mode: both;
   
   &::before {
-    content: '${p => p.icon}';
+    content: '';
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 3rem;
-    opacity: 0.3;
-  }
-  
-  .number {
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-  }
-  
-  .label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    opacity: 0.9;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
   }
 `;
 
-// Content area with tabs
-const ContentArea = styled.div`
-  background: var(--white);
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-  animation: ${fadeIn} 0.6s ease;
-  animation-delay: 0.4s;
-  animation-fill-mode: both;
+const StatNumber = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+`;
+
+const StatLabel = styled.div`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
 `;
 
 const Tabs = styled.div`
   display: flex;
-  border-bottom: 1px solid var(--gray-100);
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 `;
 
 const Tab = styled.button`
-  flex: 1;
-  padding: 1.25rem 2rem;
-  font-size: 0.9rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: ${p => p.active ? 'var(--coral)' : 'var(--gray-500)'};
-  background: ${p => p.active ? 'var(--white)' : 'var(--gray-50)'};
+  color: ${p => p.$active ? '#fff' : 'rgba(255,255,255,0.5)'};
+  background: ${p => p.$active ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : 'rgba(255,255,255,0.05)'};
   border: none;
-  border-bottom: 3px solid ${p => p.active ? 'var(--coral)' : 'transparent'};
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
-    color: ${p => p.active ? 'var(--coral)' : 'var(--gray-700)'};
+    color: #fff;
+    background: ${p => p.$active ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : 'rgba(255,255,255,0.1)'};
   }
 `;
 
-const TabContent = styled.div`
-  padding: 2rem;
+const Table = styled.div`
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
 `;
 
-// Table
-const TableWrapper = styled.div`
-  overflow-x: auto;
+const TableHeader = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255,255,255,0.05);
+  
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
+const Th = styled.div`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+`;
+
+const TableRow = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.3s ease;
   
-  th, td {
-    padding: 1.25rem 1rem;
-    text-align: left;
+  &:hover {
+    background: rgba(255,255,255,0.03);
   }
   
-  th {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--gray-500);
-    background: var(--gray-50);
-    border-bottom: 1px solid var(--gray-100);
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
-  
-  td {
-    font-size: 0.9rem;
-    color: var(--gray-700);
-    border-bottom: 1px solid var(--gray-100);
-  }
-  
-  tbody tr {
-    transition: background 0.2s ease;
-    
-    &:hover {
-      background: var(--gray-50);
-    }
-  }
+`;
+
+const Td = styled.div`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
 `;
 
 const StatusBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.75rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
   font-weight: 600;
-  border-radius: 20px;
-  
-  ${p => p.status === 'yes' && `
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
-  `}
-  ${p => p.status === 'no' && `
-    background: rgba(239, 68, 68, 0.1);
-    color: #DC2626;
-  `}
-  ${p => p.status === 'pending' && `
-    background: rgba(245, 158, 11, 0.1);
-    color: #D97706;
-  `}
-  
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-  }
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  background: ${p => p.$status === 'confirmed' ? 'rgba(16, 185, 129, 0.2)' : p.$status === 'declined' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 191, 36, 0.2)'};
+  color: ${p => p.$status === 'confirmed' ? '#10b981' : p.$status === 'declined' ? '#ef4444' : '#fbbf24'};
 `;
 
-const GuestInfo = styled.div`
-  .name {
-    font-weight: 600;
-    color: var(--black);
-    margin-bottom: 0.2rem;
-  }
-  
-  .email {
-    font-size: 0.8rem;
-    color: var(--gray-500);
-  }
-`;
-
-// Photo grid
-const PhotoGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-`;
-
-const PhotoCard = styled.div`
-  position: relative;
-  aspect-ratio: 1;
-  background: var(--gray-100);
-  border-radius: 15px;
-  overflow: hidden;
+const ActionButton = styled.button`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+  margin-bottom: 1.5rem;
   
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-    
-    .overlay { opacity: 1; }
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
   }
 `;
 
-const PhotoPlaceholder = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
-  
-  span {
-    font-size: 2.5rem;
-    opacity: 0.3;
-  }
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Sora', sans-serif;
 `;
 
-const PhotoOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.8) 100%);
-  display: flex;
-  align-items: flex-end;
-  padding: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  
-  .guest {
-    font-size: 0.8rem;
-    color: var(--white);
-    font-weight: 500;
-  }
-`;
-
-// Action bar
-const ActionBar = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  background: var(--gray-50);
-  border-top: 1px solid var(--gray-100);
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
-
-const ActionInfo = styled.div`
-  font-size: 0.85rem;
-  color: var(--gray-600);
-  
-  strong { color: var(--black); }
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  gap: 0.75rem;
-`;
-
-const ActionBtn = styled.button`
-  padding: 0.7rem 1.25rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-  
-  ${p => p.primary ? `
-    background: var(--coral);
-    color: var(--white);
-    border: none;
-    
-    &:hover {
-      background: var(--coral-dark);
-      transform: translateY(-2px);
-    }
-  ` : `
-    background: var(--white);
-    color: var(--gray-700);
-    border: 2px solid var(--gray-200);
-    
-    &:hover {
-      border-color: var(--coral);
-      color: var(--coral);
-    }
-  `}
-`;
-
-function AdminDashboard({
-  coupleNames = 'Sophie & Max',
-  rsvpData = [
-    { name: 'Lisa & Thomas Meier', email: 'lisa@email.de', status: 'yes', guests: 2, menu: 'Vegetarisch', date: '2024-03-15' },
-    { name: 'Anna Weber', email: 'anna@email.de', status: 'yes', guests: 1, menu: 'Vegan', date: '2024-03-14' },
-    { name: 'Familie Müller', email: 'mueller@email.de', status: 'no', guests: 0, menu: '-', date: '2024-03-13' },
-    { name: 'Max Hoffmann', email: 'max@email.de', status: 'pending', guests: 0, menu: '-', date: '-' },
-    { name: 'Julia & Ben Koch', email: 'julia@email.de', status: 'yes', guests: 2, menu: 'Fleisch', date: '2024-03-12' },
-  ],
-  photos = [
-    { url: null, guestName: 'Lisa Meier' },
-    { url: null, guestName: 'Anna Weber' },
-    { url: null, guestName: 'Familie Müller' },
-    { url: null, guestName: 'Julia Koch' },
-    { url: null, guestName: 'Lisa Meier' },
-    { url: null, guestName: 'Ben Koch' },
-  ],
-  onLogout = () => console.log('Logout'),
-}) {
+function AdminDashboard({ coupleNames = 'Sophie & Max', rsvpData = [], photos = [], onLogout, onDownloadRSVP, showBadge = false }) {
   const [activeTab, setActiveTab] = useState('rsvp');
 
-  const confirmedGuests = rsvpData.filter(r => r.status === 'yes').reduce((sum, r) => sum + r.guests, 0);
-  const pendingCount = rsvpData.filter(r => r.status === 'pending').length;
-  const declinedCount = rsvpData.filter(r => r.status === 'no').length;
-
-  const downloadCSV = () => {
-    const headers = ['Name', 'E-Mail', 'Status', 'Gäste', 'Menü', 'Datum'];
-    const rows = rsvpData.map(r => [r.name, r.email, r.status, r.guests, r.menu, r.date]);
-    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'rsvp-responses.csv';
-    a.click();
-  };
-
-  const statCards = [
-    { icon: '🎉', number: rsvpData.filter(r => r.status === 'yes').length, label: 'Confirmed RSVPs', gradient: 'linear-gradient(135deg, var(--coral), var(--pink))' },
-    { icon: '👥', number: confirmedGuests, label: 'Total Guests', gradient: 'linear-gradient(135deg, var(--electric), var(--purple))' },
-    { icon: '⏳', number: pendingCount, label: 'Pending', gradient: 'linear-gradient(135deg, var(--yellow), #F59E0B)' },
-    { icon: '📸', number: photos.length, label: 'Photos Uploaded', gradient: 'linear-gradient(135deg, var(--purple), var(--pink))' },
+  const defaultRsvpData = [
+    { id: 1, name: 'Anna Schmidt', email: 'anna@email.de', guests: 2, menu: 'Fleisch', status: 'confirmed' },
+    { id: 2, name: 'Thomas Müller', email: 'thomas@email.de', guests: 1, menu: 'Vegetarisch', status: 'confirmed' },
+    { id: 3, name: 'Lisa Weber', email: 'lisa@email.de', guests: 2, menu: 'Fisch', status: 'pending' },
+    { id: 4, name: 'Michael Koch', email: 'michael@email.de', guests: 1, menu: '-', status: 'declined' },
   ];
+
+  const data = rsvpData.length > 0 ? rsvpData : defaultRsvpData;
+  
+  const stats = {
+    confirmed: data.filter(r => r.status === 'confirmed').length,
+    totalGuests: data.filter(r => r.status === 'confirmed').reduce((sum, r) => sum + r.guests, 0),
+    pending: data.filter(r => r.status === 'pending').length,
+    photos: photos.length,
+  };
 
   return (
     <Section>
+      {showBadge && <IncludedBadge>Inklusive</IncludedBadge>}
+      
       <Container>
         <Header>
-          <TitleGroup>
-            <h1>Dashboard</h1>
-            <p>Manage your wedding responses and photos</p>
-          </TitleGroup>
-          <LogoutBtn onClick={onLogout}>Sign Out</LogoutBtn>
+          <Title>Dashboard ✨</Title>
+          <LogoutButton onClick={onLogout}>Abmelden</LogoutButton>
         </Header>
         
         <StatsGrid>
-          {statCards.map((stat, i) => (
-            <StatCard key={i} index={i} gradient={stat.gradient} icon={stat.icon}>
-              <div className="number">{stat.number}</div>
-              <div className="label">{stat.label}</div>
-            </StatCard>
-          ))}
+          <StatCard $colors={['#8B5CF6', '#7c3aed']}><StatNumber>{stats.confirmed}</StatNumber><StatLabel>Zusagen</StatLabel></StatCard>
+          <StatCard $colors={['#EC4899', '#db2777']}><StatNumber>{stats.totalGuests}</StatNumber><StatLabel>Gäste gesamt</StatLabel></StatCard>
+          <StatCard $colors={['#F97316', '#ea580c']}><StatNumber>{stats.pending}</StatNumber><StatLabel>Ausstehend</StatLabel></StatCard>
+          <StatCard $colors={['#10b981', '#059669']}><StatNumber>{stats.photos}</StatNumber><StatLabel>Fotos</StatLabel></StatCard>
         </StatsGrid>
         
-        <ContentArea>
-          <Tabs>
-            <Tab active={activeTab === 'rsvp'} onClick={() => setActiveTab('rsvp')}>
-              📋 RSVP Responses
-            </Tab>
-            <Tab active={activeTab === 'photos'} onClick={() => setActiveTab('photos')}>
-              📸 Photo Gallery
-            </Tab>
-          </Tabs>
-          
-          <TabContent>
-            {activeTab === 'rsvp' && (
-              <TableWrapper>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Guest</th>
-                      <th>Status</th>
-                      <th>Party Size</th>
-                      <th>Menu</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rsvpData.map((r, i) => (
-                      <tr key={i}>
-                        <td>
-                          <GuestInfo>
-                            <div className="name">{r.name}</div>
-                            <div className="email">{r.email}</div>
-                          </GuestInfo>
-                        </td>
-                        <td>
-                          <StatusBadge status={r.status}>
-                            {r.status === 'yes' ? 'Confirmed' : r.status === 'no' ? 'Declined' : 'Pending'}
-                          </StatusBadge>
-                        </td>
-                        <td>{r.guests > 0 ? `${r.guests} guests` : '-'}</td>
-                        <td>{r.menu}</td>
-                        <td>{r.date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </TableWrapper>
-            )}
+        <Tabs>
+          <Tab $active={activeTab === 'rsvp'} onClick={() => setActiveTab('rsvp')}>RSVP</Tab>
+          <Tab $active={activeTab === 'photos'} onClick={() => setActiveTab('photos')}>Fotos</Tab>
+        </Tabs>
+        
+        {activeTab === 'rsvp' && (
+          <>
+            <ActionButton onClick={onDownloadRSVP}>📥 Als CSV exportieren</ActionButton>
             
-            {activeTab === 'photos' && (
-              <PhotoGrid>
-                {photos.map((photo, i) => (
-                  <PhotoCard key={i}>
-                    {photo.url ? (
-                      <img src={photo.url} alt="" />
-                    ) : (
-                      <PhotoPlaceholder><span>📷</span></PhotoPlaceholder>
-                    )}
-                    <PhotoOverlay className="overlay">
-                      <span className="guest">by {photo.guestName}</span>
-                    </PhotoOverlay>
-                  </PhotoCard>
+            {data.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <Th>Name</Th><Th>E-Mail</Th><Th>Gäste</Th><Th>Menü</Th><Th>Status</Th>
+                </TableHeader>
+                {data.map(row => (
+                  <TableRow key={row.id}>
+                    <Td>{row.name}</Td>
+                    <Td>{row.email}</Td>
+                    <Td>{row.guests}</Td>
+                    <Td>{row.menu}</Td>
+                    <Td>
+                      <StatusBadge $status={row.status}>
+                        {row.status === 'confirmed' ? '✓ Zugesagt' : row.status === 'declined' ? '✗ Abgesagt' : '⏳ Ausstehend'}
+                      </StatusBadge>
+                    </Td>
+                  </TableRow>
                 ))}
-              </PhotoGrid>
+              </Table>
+            ) : (
+              <EmptyState>Noch keine Anmeldungen vorhanden.</EmptyState>
             )}
-          </TabContent>
-          
-          <ActionBar>
-            <ActionInfo>
-              {activeTab === 'rsvp' ? (
-                <>Showing <strong>{rsvpData.length}</strong> responses</>
-              ) : (
-                <>Showing <strong>{photos.length}</strong> photos</>
-              )}
-            </ActionInfo>
-            <ActionButtons>
-              {activeTab === 'rsvp' ? (
-                <>
-                  <ActionBtn onClick={downloadCSV}>Export CSV</ActionBtn>
-                  <ActionBtn primary>Send Reminder</ActionBtn>
-                </>
-              ) : (
-                <ActionBtn primary>Download All</ActionBtn>
-              )}
-            </ActionButtons>
-          </ActionBar>
-        </ContentArea>
+          </>
+        )}
+        
+        {activeTab === 'photos' && (
+          <EmptyState>📷 Noch keine Fotos hochgeladen.</EmptyState>
+        )}
       </Container>
     </Section>
   );

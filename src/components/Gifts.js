@@ -1,284 +1,399 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 const float = keyframes`
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: var(--white);
+  background: #fff;
 `;
 
 const Container = styled.div`
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-`;
-
-const Eyebrow = styled.div`
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1rem;
 `;
 
 const Title = styled.h2`
-  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  color: var(--black);
+  color: #1a1a2e;
   margin-bottom: 1rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
-const Intro = styled.p`
+const Subtitle = styled.p`
+  font-family: 'Sora', sans-serif;
   font-size: 1.1rem;
-  color: var(--gray-600);
+  color: #6b7280;
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.7;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
+  transition-delay: 0.1s;
 `;
 
-// Gift card with flip effect
-const GiftCard = styled.div`
-  background: linear-gradient(135deg, var(--electric), var(--purple));
-  border-radius: 30px;
+const MainCard = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 32px;
   padding: 3rem;
+  margin-bottom: 3rem;
+  text-align: center;
   position: relative;
   overflow: hidden;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.2s;
   
-  @media (max-width: 600px) {
-    padding: 2rem;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    pointer-events: none;
   }
 `;
 
-const FloatingEmoji = styled.div`
-  position: absolute;
-  font-size: ${p => p.size}rem;
-  top: ${p => p.top};
-  right: ${p => p.right};
-  opacity: 0.6;
-  ${p => css`
-    animation: ${float} ${p.duration}s ease-in-out infinite;
-    animation-delay: ${p.delay}s;
-  `}
-`;
-
-const CardContent = styled.div`
-  position: relative;
-  z-index: 2;
-  text-align: center;
-`;
-
-const CardIcon = styled.div`
+const MainIcon = styled.div`
   font-size: 4rem;
   margin-bottom: 1.5rem;
+  animation: ${float} 3s ease-in-out infinite;
 `;
 
-const CardTitle = styled.h3`
-  font-size: 2rem;
+const MainTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: var(--white);
+  color: #fff;
   margin-bottom: 1rem;
 `;
 
-const CardText = styled.p`
+const MainText = styled.p`
+  font-family: 'Sora', sans-serif;
   font-size: 1rem;
-  color: rgba(255,255,255,0.85);
-  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
   max-width: 500px;
   margin: 0 auto 2rem;
+  line-height: 1.7;
 `;
 
-// Bank details with copy function
-const BankDetails = styled.div`
+const CopyBox = styled.div`
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-top: 2rem;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  display: inline-block;
+  max-width: 100%;
 `;
 
-const DetailRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  
-  &:last-child { border-bottom: none; }
-  
-  @media (max-width: 500px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-`;
-
-const DetailLabel = styled.span`
-  font-size: 0.75rem;
+const CopyLabel = styled.div`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.5rem;
 `;
 
-const DetailValue = styled.div`
+const CopyValue = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  word-break: break-all;
+`;
+
+const WishlistTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: center;
+  margin-bottom: 2rem;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transition: all 0.8s ease;
+  transition-delay: 0.3s;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+`;
+
+const GiftCard = styled.div`
+  background: #f9fafb;
+  border: 2px solid ${p => p.$reserved ? '#e5e7eb' : 'transparent'};
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
+  transition: all 0.8s ease;
+  transition-delay: ${p => 0.4 + p.$index * 0.1}s;
+  
+  ${p => !p.$reserved && `
+    &:hover {
+      border-color: #8B5CF6;
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+      transform: translateY(-5px);
+    }
+  `}
+`;
+
+const ReservedBadge = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #10b981;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+`;
+
+const GiftImage = styled.div`
+  width: 100%;
+  height: 140px;
+  background: ${p => p.$image ? `url(${p.$image}) center/cover` : 'linear-gradient(135deg, #e0e7ff, #fce7f3)'};
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  opacity: ${p => p.$reserved ? 0.5 : 1};
+`;
+
+const GiftName = styled.h4`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: ${p => p.$reserved ? '#9ca3af' : '#1a1a2e'};
+  margin-bottom: 0.5rem;
+`;
+
+const GiftPrice = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: ${p => p.$reserved ? '#9ca3af' : 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+`;
+
+const ReserveButton = styled.button`
+  width: 100%;
+  padding: 0.75rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: ${p => p.$reserved ? '#9ca3af' : '#fff'};
+  background: ${p => p.$reserved ? '#e5e7eb' : 'linear-gradient(135deg, #8B5CF6, #EC4899)'};
+  border: none;
+  border-radius: 10px;
+  cursor: ${p => p.$reserved ? 'not-allowed' : 'pointer'};
+  transition: all 0.3s ease;
+  
+  ${p => !p.$reserved && `
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+    }
+  `}
+`;
+
+const Modal = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  z-index: 2000;
+  opacity: ${p => p.$open ? 1 : 0};
+  visibility: ${p => p.$open ? 'visible' : 'hidden'};
+  transition: all 0.3s ease;
+  padding: 2rem;
+`;
+
+const ModalContent = styled.div`
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 24px;
+  max-width: 400px;
+  width: 100%;
+`;
+
+const ModalTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+`;
+
+const ModalSubtitle = styled.p`
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+`;
+
+const ModalInput = styled.input`
+  width: 100%;
+  padding: 1rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 1rem;
   
-  span {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
-    color: var(--white);
+  &:focus {
+    outline: none;
+    border-color: #8B5CF6;
   }
 `;
 
-const CopyBtn = styled.button`
-  padding: 0.4rem 0.75rem;
-  font-size: 0.7rem;
+const ModalButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const ModalButton = styled.button`
+  flex: 1;
+  padding: 1rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--black);
-  background: var(--yellow);
+  border-radius: 12px;
   border: none;
-  border-radius: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   
-  &:hover {
-    background: var(--white);
-    transform: scale(1.05);
-  }
+  ${p => p.$primary ? `
+    color: #fff;
+    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3); }
+  ` : `
+    color: #6b7280;
+    background: #f3f4f6;
+    &:hover { background: #e5e7eb; }
+  `}
 `;
 
-// Optional wishlist link
-const WishlistSection = styled.div`
-  margin-top: 3rem;
-  text-align: center;
-  opacity: ${p => p.visible ? 1 : 0};
-  transition: opacity 0.8s ease;
-  transition-delay: 0.4s;
-`;
-
-const WishlistLink = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--black);
-  background: var(--yellow);
-  border-radius: 50px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: var(--coral);
-    color: var(--white);
-    transform: translateY(-3px);
-  }
-`;
-
-function Gifts({
-  intro = 'Eure Anwesenheit ist uns das Wichtigste! Wer uns dennoch beschenken möchte, findet hier einige Ideen.',
-  honeymoonText = 'Wir träumen von einem Abenteuer nach der Hochzeit! Ob Road Trip durch Kalifornien oder Strandurlaub in Thailand – jeder Beitrag bringt uns dem Traum näher.',
-  bankDetails = { recipient: 'Sophie & Max Mustermann', iban: 'DE89 3704 0044 0532 0130 00', bic: 'COBADEFFXXX', reference: 'Adventure Fund ✈️' },
-  wishlistUrl = null,
-}) {
+function Gifts({ title = 'No registry, but...', subtitle = 'Das größte Geschenk ist eure Anwesenheit! Wer uns dennoch etwas schenken möchte:', gifts = [], onReserve }) {
   const [visible, setVisible] = useState(false);
-  const [copied, setCopied] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedGift, setSelectedGift] = useState(null);
+  const [reserverName, setReserverName] = useState('');
   const sectionRef = useRef(null);
+
+  const defaultGifts = [
+    { id: 1, name: 'KitchenAid Küchenmaschine', price: '599€', image: null, reserved: false },
+    { id: 2, name: 'Dyson Staubsauger V15', price: '649€', image: null, reserved: true, reservedBy: 'Familie Müller' },
+    { id: 3, name: 'Nespresso Kaffeemaschine', price: '299€', image: null, reserved: false },
+    { id: 4, name: 'Philips Hue Starter Set', price: '149€', image: null, reserved: false },
+    { id: 5, name: 'Weber Gasgrill Spirit', price: '549€', image: null, reserved: true, reservedBy: 'Thomas' },
+    { id: 6, name: 'Bettwäsche-Set Premium', price: '189€', image: null, reserved: false },
+  ];
+
+  const items = gifts.length > 0 ? gifts : defaultGifts;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const copyToClipboard = (text, field) => {
-    navigator.clipboard.writeText(text.replace(/\s/g, ''));
-    setCopied(field);
-    setTimeout(() => setCopied(null), 2000);
+  const handleReserve = (gift) => {
+    setSelectedGift(gift);
+    setModalOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    if (onReserve) await onReserve({ gift: selectedGift, reserverName });
+    setModalOpen(false);
+    setReserverName('');
   };
 
   return (
     <Section ref={sectionRef} id="gifts">
       <Container>
-        <Header visible={visible}>
-          <Eyebrow>Gift Ideas</Eyebrow>
-          <Title>No registry, but...</Title>
-          <Intro>{intro}</Intro>
+        <Header>
+          <Title $visible={visible}>{title}</Title>
+          <Subtitle $visible={visible}>{subtitle}</Subtitle>
         </Header>
         
-        <GiftCard visible={visible}>
-          <FloatingEmoji size={4} top="10%" right="10%" duration={6} delay={0}>✈️</FloatingEmoji>
-          <FloatingEmoji size={3} top="60%" right="5%" duration={8} delay={1}>🌴</FloatingEmoji>
-          <FloatingEmoji size={2.5} top="30%" right="25%" duration={5} delay={2}>🎉</FloatingEmoji>
-          
-          <CardContent>
-            <CardIcon>🌍</CardIcon>
-            <CardTitle>Honeymoon Fund</CardTitle>
-            <CardText>{honeymoonText}</CardText>
-            
-            {bankDetails && (
-              <BankDetails>
-                <DetailRow>
-                  <DetailLabel>Empfänger</DetailLabel>
-                  <DetailValue>
-                    <span>{bankDetails.recipient}</span>
-                  </DetailValue>
-                </DetailRow>
-                <DetailRow>
-                  <DetailLabel>IBAN</DetailLabel>
-                  <DetailValue>
-                    <span>{bankDetails.iban}</span>
-                    <CopyBtn onClick={() => copyToClipboard(bankDetails.iban, 'iban')}>
-                      {copied === 'iban' ? 'Copied! ✓' : 'Copy'}
-                    </CopyBtn>
-                  </DetailValue>
-                </DetailRow>
-                <DetailRow>
-                  <DetailLabel>BIC</DetailLabel>
-                  <DetailValue>
-                    <span>{bankDetails.bic}</span>
-                  </DetailValue>
-                </DetailRow>
-                <DetailRow>
-                  <DetailLabel>Reference</DetailLabel>
-                  <DetailValue>
-                    <span>{bankDetails.reference}</span>
-                  </DetailValue>
-                </DetailRow>
-              </BankDetails>
-            )}
-          </CardContent>
-        </GiftCard>
+        <MainCard $visible={visible}>
+          <MainIcon>✈️</MainIcon>
+          <MainTitle>Honeymoon Fund</MainTitle>
+          <MainText>
+            Anstatt einer klassischen Hochzeitsliste freuen wir uns über einen Beitrag zu unserer Traumreise nach Bali! 🌴
+          </MainText>
+          <CopyBox>
+            <CopyLabel>IBAN</CopyLabel>
+            <CopyValue>DE89 3704 0044 0532 0130 00</CopyValue>
+          </CopyBox>
+        </MainCard>
         
-        {wishlistUrl && (
-          <WishlistSection visible={visible}>
-            <WishlistLink href={wishlistUrl} target="_blank">
-              Or check our wishlist →
-            </WishlistLink>
-          </WishlistSection>
-        )}
+        <WishlistTitle $visible={visible}>Oder von unserer Wunschliste 🎁</WishlistTitle>
+        
+        <Grid>
+          {items.map((gift, i) => (
+            <GiftCard key={gift.id} $index={i} $visible={visible} $reserved={gift.reserved}>
+              {gift.reserved && <ReservedBadge>Reserviert</ReservedBadge>}
+              <GiftImage $image={gift.image} $reserved={gift.reserved} />
+              <GiftName $reserved={gift.reserved}>{gift.name}</GiftName>
+              <GiftPrice $reserved={gift.reserved}>{gift.price}</GiftPrice>
+              <ReserveButton 
+                $reserved={gift.reserved}
+                onClick={() => !gift.reserved && handleReserve(gift)}
+                disabled={gift.reserved}
+              >
+                {gift.reserved ? `von ${gift.reservedBy}` : 'Reservieren'}
+              </ReserveButton>
+            </GiftCard>
+          ))}
+        </Grid>
+        
+        <Modal $open={modalOpen} onClick={() => setModalOpen(false)}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <ModalTitle>Geschenk reservieren</ModalTitle>
+            <ModalSubtitle>{selectedGift?.name} – {selectedGift?.price}</ModalSubtitle>
+            <ModalInput 
+              type="text"
+              value={reserverName}
+              onChange={e => setReserverName(e.target.value)}
+              placeholder="Dein Name"
+            />
+            <ModalButtons>
+              <ModalButton onClick={() => setModalOpen(false)}>Abbrechen</ModalButton>
+              <ModalButton $primary onClick={handleConfirm}>Reservieren</ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        </Modal>
       </Container>
     </Section>
   );

@@ -1,55 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
-const bounce = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
 `;
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: linear-gradient(180deg, var(--gray-100) 0%, var(--white) 100%);
-  position: relative;
-  overflow: hidden;
+  background: #fafafa;
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 `;
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 5rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
-`;
-
-const Eyebrow = styled.div`
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--coral);
-  margin-bottom: 1rem;
+  margin-bottom: 4rem;
 `;
 
 const Title = styled.h2`
-  font-size: clamp(3rem, 8vw, 5rem);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
-  color: var(--black);
-  letter-spacing: -0.03em;
+  color: #1a1a2e;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
+  transition: all 0.8s ease;
 `;
 
-// Zig-Zag timeline layout
-const TimelineGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+const TimelineWrapper = styled.div`
   position: relative;
   
-  /* Center dashed line */
   &::before {
     content: '';
     position: absolute;
@@ -57,180 +41,147 @@ const TimelineGrid = styled.div`
     top: 0;
     bottom: 0;
     width: 4px;
-    background: repeating-linear-gradient(
-      180deg,
-      var(--coral) 0px,
-      var(--coral) 10px,
-      transparent 10px,
-      transparent 20px
-    );
+    background: linear-gradient(180deg, #8B5CF6, #EC4899, #F97316);
     transform: translateX(-50%);
+    border-radius: 4px;
     
-    @media (max-width: 900px) {
-      left: 30px;
+    @media (max-width: 768px) {
+      left: 24px;
     }
   }
 `;
 
-const TimelineItem = styled.div`
+const Event = styled.div`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 3rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
   align-items: center;
-  
-  /* Alternate layout */
-  &:nth-child(even) {
-    .content { grid-column: 3; }
-    .empty { grid-column: 1; }
-  }
   
   &:nth-child(odd) {
     .content { grid-column: 1; text-align: right; }
-    .empty { grid-column: 3; }
+    .time-card { grid-column: 3; }
   }
   
-  @media (max-width: 900px) {
-    grid-template-columns: 60px 1fr;
+  &:nth-child(even) {
+    .content { grid-column: 3; }
+    .time-card { grid-column: 1; text-align: right; }
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 48px 1fr;
     gap: 1.5rem;
     
-    &:nth-child(even), &:nth-child(odd) {
+    &:nth-child(odd), &:nth-child(even) {
       .content { grid-column: 2; text-align: left; }
-      .empty { display: none; }
+      .time-card { display: none; }
     }
   }
 `;
 
-const TimeMarker = styled.div`
+const Dot = styled.div`
   grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 2;
-  
-  /* Scale in animation */
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: scale(${p => p.visible ? 1 : 0});
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transition-delay: ${p => p.index * 0.15}s;
-  
-  @media (max-width: 900px) {
-    grid-column: 1;
-  }
-`;
-
-const MarkerCircle = styled.div`
-  width: 70px;
-  height: 70px;
-  background: var(--white);
-  border: 4px solid ${p => p.color};
+  width: 56px;
+  height: 56px;
+  background: ${p => p.$active ? 'linear-gradient(135deg, #8B5CF6, #EC4899)' : '#fff'};
+  border: 4px solid ${p => p.$active ? '#8B5CF6' : '#e5e7eb'};
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  animation: ${bounce} 3s ease-in-out infinite;
-  animation-delay: ${p => p.index * 0.3}s;
+  font-size: 1.5rem;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: scale(${p => p.$visible ? 1 : 0});
+  transition: all 0.5s ease;
+  transition-delay: ${p => p.$delay}s;
   
-  @media (max-width: 900px) {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
+  ${p => p.$active && css`animation: ${pulse} 2s ease-in-out infinite;`}
+  
+  @media (max-width: 768px) {
+    grid-column: 1;
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
   }
 `;
 
-const TimeLabel = styled.div`
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: ${p => p.color};
-  background: var(--white);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-`;
-
 const Content = styled.div`
-  /* Fly in from side */
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateX(${p => p.visible ? 0 : (p.fromRight ? '80px' : '-80px')});
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: ${p => 0.1 + p.index * 0.15}s;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateX(${p => p.$visible ? 0 : (p.$fromRight ? '30px' : '-30px')});
+  transition: all 0.8s ease;
+  transition-delay: ${p => p.$delay}s;
 `;
 
-const ContentCard = styled.div`
-  background: var(--white);
+const EventCard = styled.div`
+  background: #fff;
+  padding: 1.75rem;
   border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
-  }
-  
-  /* Color accent bar */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: ${p => p.color};
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.15);
   }
 `;
 
-const EventTitle = styled.h3`
-  font-size: 1.4rem;
+const EventTime = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--black);
+  color: #8B5CF6;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+`;
+
+const EventTitle = styled.h3`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a2e;
   margin-bottom: 0.5rem;
 `;
 
 const EventDesc = styled.p`
-  font-size: 0.95rem;
-  color: var(--gray-600);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin: 0;
   line-height: 1.6;
-  margin-bottom: 1rem;
 `;
 
-const EventMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    color: var(--gray-600);
-    background: var(--gray-100);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-  }
+const TimeCard = styled.div`
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: ${p => p.$visible ? 1 : 0};
+  transition: all 0.8s ease;
+  transition-delay: ${p => p.$delay}s;
 `;
 
-const Empty = styled.div``;
-
-function Timeline({
-  events = [
-    { time: '14:00', icon: '💒', title: 'Ceremony', description: 'Die freie Trauung im Garten – bring Taschentücher mit!', location: 'Secret Garden', color: 'var(--coral)' },
-    { time: '15:30', icon: '🥂', title: 'Champagne Hour', description: 'Cheers! Cocktails, Häppchen und gute Vibes.', location: 'Terrace', color: 'var(--electric)' },
-    { time: '17:00', icon: '📸', title: 'Photo Time', description: 'Gruppenfoto mit allen – seid dabei!', location: 'Main Lawn', color: 'var(--yellow)' },
-    { time: '18:30', icon: '🍽️', title: 'Dinner', description: 'Fine Dining mit vegetarischen & veganen Optionen.', location: 'Grand Hall', color: 'var(--purple)' },
-    { time: '21:00', icon: '🎤', title: 'Speeches & Cake', description: 'Emotionale Reden und die Hochzeitstorte!', location: 'Grand Hall', color: 'var(--pink)' },
-    { time: '22:00', icon: '🎉', title: 'Party Time', description: 'DJ, Dancefloor, bis in den Morgen feiern!', location: 'Dance Hall', color: 'var(--coral)' },
-  ],
-}) {
+function Timeline({ title = "What's happening", events = [] }) {
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
+
+  const defaultEvents = [
+    { time: '14:00', icon: '💒', title: 'Ceremony', description: 'Standesamtliche Trauung in der Schlosskapelle.', highlight: true },
+    { time: '15:00', icon: '🥂', title: 'Champagne & Co', description: 'Sektempfang auf der Terrasse mit Canapés.' },
+    { time: '16:00', icon: '📸', title: 'Photo Time', description: 'Gruppenfotos mit allen Gästen im Schlossgarten.' },
+    { time: '18:00', icon: '🍽️', title: 'Dinner', description: 'Festliches 4-Gänge-Menü in der Orangerie.', highlight: true },
+    { time: '20:00', icon: '🎂', title: 'Cake Cutting', description: 'Anschnitt der dreistöckigen Hochzeitstorte.' },
+    { time: '21:00', icon: '💃', title: 'First Dance', description: 'Eröffnungstanz und Start der Party!' },
+  ];
+
+  const items = events.length > 0 ? events : defaultEvents;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -244,40 +195,31 @@ function Timeline({
   return (
     <Section ref={sectionRef} id="timeline">
       <Container>
-        <Header visible={visible}>
-          <Eyebrow>The Schedule</Eyebrow>
-          <Title>What's happening</Title>
+        <Header>
+          <Title $visible={visible}>{title}</Title>
         </Header>
         
-        <TimelineGrid>
-          {events.map((event, i) => (
-            <TimelineItem key={i}>
-              <Content 
-                className="content" 
-                index={i} 
-                visible={visible}
-                fromRight={i % 2 === 0}
-              >
-                <ContentCard color={event.color}>
+        <TimelineWrapper>
+          {items.map((event, i) => (
+            <Event key={i}>
+              <Content className="content" $visible={visible} $delay={0.2 + i * 0.1} $fromRight={i % 2 === 0}>
+                <EventCard>
+                  <EventTime>{event.time}</EventTime>
                   <EventTitle>{event.title}</EventTitle>
                   <EventDesc>{event.description}</EventDesc>
-                  <EventMeta>
-                    <span>📍 {event.location}</span>
-                  </EventMeta>
-                </ContentCard>
+                </EventCard>
               </Content>
               
-              <TimeMarker index={i} visible={visible}>
-                <MarkerCircle color={event.color} index={i}>
-                  {event.icon}
-                </MarkerCircle>
-                <TimeLabel color={event.color}>{event.time}</TimeLabel>
-              </TimeMarker>
+              <Dot $active={event.highlight} $visible={visible} $delay={0.2 + i * 0.1}>
+                {event.icon}
+              </Dot>
               
-              <Empty className="empty" />
-            </TimelineItem>
+              <TimeCard className="time-card" $visible={visible} $delay={0.2 + i * 0.1}>
+                {event.time}
+              </TimeCard>
+            </Event>
           ))}
-        </TimelineGrid>
+        </TimelineWrapper>
       </Container>
     </Section>
   );
